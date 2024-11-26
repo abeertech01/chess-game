@@ -35,7 +35,7 @@ const formSchema = z
     email: z.string().email({
       message: "Invalid email address.",
     }),
-    picture: z
+    profileImage: z
       .custom<File>((file) => file instanceof File, {
         message: "Invalid file type.",
       })
@@ -78,10 +78,26 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
   })
 
   // 2. Define a submit handler.
-  function onSubmit(values: z.infer<typeof formSchema>) {
-    // Do something with the form values.
-    // ✅ This will be type-safe and validated.
-    console.log(values)
+  async function onSubmit(values: z.infer<typeof formSchema>) {
+    const formData = new FormData()
+
+    for (const key in values) {
+      if (key !== "confirmPassword") {
+        formData.append(key, values[key as keyof typeof values])
+      }
+    }
+
+    try {
+      const response = await fetch("/api/auth", {
+        method: "POST",
+        body: formData,
+      })
+
+      const data = await response.json()
+      console.log(data)
+    } catch (error) {
+      console.log(error)
+    }
   }
 
   return (
@@ -136,7 +152,7 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
             />
             <FormField
               control={form.control}
-              name="picture"
+              name="profileImage"
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Profile Picture</FormLabel>
