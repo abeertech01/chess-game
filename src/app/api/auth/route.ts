@@ -1,67 +1,30 @@
-import mime from "mime"
-import { stat, mkdir, writeFile } from "fs/promises"
-import { join } from "path"
 import { NextRequest, NextResponse } from "next/server"
+import { uploadToCloudinary } from "@/utils/cloudinary"
 
 export async function POST(req: NextRequest) {
   const formData = await req.formData()
-  const image = (formData.get("profileImage") as File) || null
+  const profileImage = formData.get("profileImage") as File
 
-  const buffer = Buffer.from(await image.arrayBuffer())
-  const relativeUploadDir = `/uploads/${new Date(Date.now())
-    .toLocaleDateString("id-ID", {
-      day: "2-digit",
-      month: "2-digit",
-      year: "numeric",
-    })
-    .replace(/\//g, "-")}`
+  const imageBuffer = await profileImage.arrayBuffer()
 
-  const uploadDir = join(process.cwd(), "public", relativeUploadDir)
+  const mimeType = profileImage.type
+  const encoding = "base64"
+  const base64Data = Buffer.from(imageBuffer).toString(encoding)
 
-  try {
-    await stat(uploadDir)
-  } catch (error: any) {
-    if (error.code === "ENOENT") {
-      await mkdir(uploadDir, { recursive: true })
-    } else {
-      console.error(
-        "Error while trying to create directory when uploading file.\n",
-        error
-      )
+  // this will be used to upload the file
+  const imageUri = "data:" + mimeType + ";" + encoding + "," + base64Data
 
-      return NextResponse.json(
-        {
-          error: "Something went wrong.",
-        },
-        {
-          status: 500,
-        }
-      )
-    }
-  }
+  const res = await uploadToCloudinary(imageUri, profileImage.name)
 
-  try {
-    const uniqueSuffix = `${Date.now()}-${Math.round(Math.random() * 1e9)}`
-    const filename = `${image.name.replace(
-      /\.[^/.]+$/,
-      ""
-    )}-${uniqueSuffix}.${mime.getExtension(image.type)}`
-    await writeFile(`${uploadDir}/${filename}`, buffer)
-    const fileUrl = `${relativeUploadDir}/${filename}`
-
+  if (res.success && res.result) {
     return NextResponse.json({
-      fileUrl,
+      success: true,
+      profileImage: res.result.secure_url,
     })
-  } catch (error) {
-    console.error("Error while trying to upload the file.\n", error)
-
-    return NextResponse.json(
-      {
-        error: "Something went wrong.",
-      },
-      {
-        status: 500,
-      }
-    )
+  } else {
+    return NextResponse.json({
+      success: false,
+      message: "Something went wrong",
+    })
   }
 }

@@ -190,7 +190,11 @@ const RegisterForm: React.FC<RegisterFormProps> = () => {
                 <FormItem>
                   <FormLabel>Confirm Password</FormLabel>
                   <FormControl>
-                    <Input type="password" placeholder="Email" {...field} />
+                    <Input
+                      type="password"
+                      placeholder="Confirm Password"
+                      {...field}
+                    />
                   </FormControl>
                   <FormMessage />
                 </FormItem>
