@@ -61,6 +61,10 @@ schema.pre("save", function () {
 })
 
 schema.methods.compare = function (password) {
+  console.log("=== User Model ===")
+  console.log("=== password " + password + " ===")
+  console.log("=== this.password " + this.password + " ===")
+  console.log("=== User Model ===")
   if (this.password) {
     return compareSync(password, this.password)
   }

@@ -4,12 +4,18 @@ const uri = process.env.MONGOOSE_URI
 
 if (!uri) throw new Error("MONGOOSE_URI is missing")
 
-let connection: typeof mongoose
-
 const startDB = async () => {
   try {
-    if (!connection) {
-      connection = await mongoose.connect(uri)
+    if (mongoose.connection.readyState === 1) {
+      console.log("Database already connected")
+      return
+    }
+
+    if (mongoose.connection.readyState === 0) {
+      await mongoose.connect(uri)
+      console.log("Database connected!!")
+    } else {
+      console.log("Connection is in progress...")
     }
   } catch (error) {
     throw error

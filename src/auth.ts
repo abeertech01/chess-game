@@ -29,6 +29,9 @@ export const {
 
         const isItAnEmail = isEmail(userAddress as string)
 
+        try {
+        } catch (error) {}
+
         await startDB()
         if (isItAnEmail) {
           const email = userAddress as string
@@ -46,6 +49,15 @@ export const {
       },
     }),
   ],
+  /**
+   * -> jwt returns token initially right when users signs in.
+   * -> jwt is called again with the defined changes.
+   * -> jwt sends the token to session callback.
+   * -> session callback is called with the token.
+   * -> session callback returns the session object.
+   * -> session object contains user's login credentials.
+   * -> session is called every time the user visits the page, signs in or out.
+   */
   // callbacks: {
   //   // TODO:
   // },

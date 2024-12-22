@@ -18,7 +18,7 @@ import {
 } from "@/components/ui/form"
 import { Input } from "@/components/ui/input"
 import { zodResolver } from "@hookform/resolvers/zod"
-import { redirect } from "next/navigation"
+import { useRouter } from "next/navigation"
 import { FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
@@ -35,6 +35,7 @@ const formSchema = z.object({
 })
 
 const LoginForm: FC<ComponentProps> = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -52,7 +53,9 @@ const LoginForm: FC<ComponentProps> = () => {
     const data = await response.json()
     console.log(data)
 
-    redirect("/")
+    if (data.success) {
+      router.push("/")
+    }
   }
   return (
     <Card>

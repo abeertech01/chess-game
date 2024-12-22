@@ -21,6 +21,7 @@ import { FC } from "react"
 import { useForm } from "react-hook-form"
 import { z } from "zod"
 import { zodResolver } from "@hookform/resolvers/zod"
+import { useRouter } from "next/navigation"
 
 interface ComponentProps {}
 
@@ -65,6 +66,7 @@ const formSchema = z
   })
 
 const RegisterForm: FC<ComponentProps> = () => {
+  const router = useRouter()
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -93,8 +95,12 @@ const RegisterForm: FC<ComponentProps> = () => {
 
       const data = await response.json()
       console.log(data)
+
+      if (data.success) {
+        router.push("/")
+      }
     } catch (error) {
-      console.log(error)
+      console.log("Register error: ", error)
     }
   }
 

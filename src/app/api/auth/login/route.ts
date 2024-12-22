@@ -11,7 +11,7 @@ export async function POST(req: NextRequest) {
   })
 
   if (!result || result.error) {
-    return NextResponse.json({ error: "Invalid credentials" })
+    return NextResponse.json({ success: false, error: "Invalid credentials" })
   } else {
     return NextResponse.json({ success: true })
   }

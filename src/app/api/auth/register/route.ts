@@ -46,17 +46,26 @@ export async function POST(req: NextRequest) {
           },
         })
 
+        console.log({ username: user.username, password: user.password })
+
         // TODO: sign in with nextauth's (credentials way)
-        await signIn("credentials", {
-          userAddress: user.username,
-          password: user.password,
-          redirectTo: "/",
+        const result = await signIn("credentials", {
+          userAddress: values.username,
+          password: values.password,
+          redirect: false,
         })
 
-        return NextResponse.json({
-          success: true,
-          user,
-        })
+        if (!result || result.error) {
+          return NextResponse.json({
+            success: false,
+            error: result.error.message,
+          })
+        } else {
+          console.log("@/api/auth/register/route: Sign In Error")
+          return NextResponse.json({
+            success: true,
+          })
+        }
       } else {
         return NextResponse.json({
           success: false,
