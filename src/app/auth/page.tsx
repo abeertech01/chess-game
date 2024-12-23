@@ -2,6 +2,7 @@ import { FC } from "react"
 import Image from "next/image"
 import logoImage from "@/assets/knight.png"
 import ModeToggle from "@/components/ModeToggle"
+import AuthTabs from "@/app/auth/components/AuthTabs"
 
 interface ComponentProps {}
 
@@ -14,7 +15,7 @@ const page: FC<ComponentProps> = () => {
       <div className="absolute top-4 right-4">
         <ModeToggle />
       </div>
-      {/* <AuthTabs /> */}
+      <AuthTabs />
     </div>
   )
 }
