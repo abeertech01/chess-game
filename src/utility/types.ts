@@ -6,3 +6,22 @@ export interface User {
   password?: string
   confirmPassword?: string
 }
+
+export type PieceColor = "white" | "black"
+
+export interface Square {
+  id: string
+  piece: string | null
+}
+
+export interface Row {
+  no: number
+  squares: Square[]
+}
+
+export interface Piece {
+  name: string
+  number: number
+  color: PieceColor
+  default_square: string | undefined
+}
