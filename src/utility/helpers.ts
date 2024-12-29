@@ -53,7 +53,6 @@ const generatePieces = () => {
 
 const generateSquares = () => {
   const squares: Square[] = []
-  let rows: Row[] = []
 
   for (let i = 1; i <= ROW_NUMBERS; i++) {
     for (let j = 0; j < ROW.length; j++) {
@@ -66,17 +65,7 @@ const generateSquares = () => {
     }
   }
 
-  if (squares.length === 64) {
-    Array.from({ length: 8 }).forEach((_, i) => {
-      const row: Square[] = squares.slice(i * 8, (i + 1) * 8)
-      rows.push({
-        no: i + 1,
-        squares: row,
-      })
-    })
-  }
-
-  return { squares, rows: rows.reverse() }
+  return squares
 }
 
 export { generateSquares, generatePieces }

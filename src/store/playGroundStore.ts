@@ -1,10 +1,5 @@
-import { Piece, Row, Square, ToMove } from "@/utility/types"
+import { Piece, Square, ToMove } from "@/utility/types"
 import { create } from "zustand"
-
-type SetSquaresAndRows = {
-  squares: Square[]
-  rows: Row[]
-}
 
 type AllThePieces = {
   white: Piece[]
@@ -13,17 +8,15 @@ type AllThePieces = {
 
 type PlayGroundStore = {
   squares: Square[]
-  rows: Row[]
   allThePieces: AllThePieces
   toMove: ToMove
   selectASquare: (squareId: string) => void
   setAllThePieces: (thePieces: AllThePieces) => void
-  setSquaresAndRows: ({ squares, rows }: SetSquaresAndRows) => void
+  setSquares: (squares: Square[]) => void
 }
 
 export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
   squares: [],
-  rows: [],
   allThePieces: {} as AllThePieces,
   toMove: "white",
   selectASquare: (squareId) =>
@@ -38,7 +31,7 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       return { squares: updatedSquares }
     }),
   setAllThePieces: (thePieces) => set({ allThePieces: thePieces }),
-  setSquaresAndRows: ({ squares, rows }) => set({ squares, rows }),
+  setSquares: (squares) => set({ squares }),
 }))
 
 /**

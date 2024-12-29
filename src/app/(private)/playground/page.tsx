@@ -1,18 +1,18 @@
 "use client"
 
-import { FC, useEffect } from "react"
+import { FC, useEffect, useState } from "react"
 import Square from "@/app/(private)/playground/components/Square"
 import { usePlayGroundStore } from "@/store/playGroundStore"
 import { generatePieces, generateSquares } from "@/utility/helpers"
+import { Row, Square as SquareObj } from "@/utility/types"
 
 interface ComponentProps {}
 
 const PlayGround: FC<ComponentProps> = () => {
-  const setSquaresAndRows = usePlayGroundStore(
-    (state) => state.setSquaresAndRows
-  )
+  const [rows, setRows] = useState<Row[]>([])
+  const setSquares = usePlayGroundStore((state) => state.setSquares)
   const setAllThePieces = usePlayGroundStore((state) => state.setAllThePieces)
-  const rows = usePlayGroundStore((state) => state.rows)
+  const squares = usePlayGroundStore((state) => state.squares)
 
   useEffect(() => {
     const squaresAndRows = generateSquares()
@@ -20,17 +20,40 @@ const PlayGround: FC<ComponentProps> = () => {
 
     console.log("allThePieces: ", allThePieces)
 
-    setSquaresAndRows(squaresAndRows)
+    setSquares(squaresAndRows)
     setAllThePieces(allThePieces)
   }, [])
+
+  useEffect(() => {
+    if (squares && squares.length === 64 && rows.length !== 8) {
+      getRowsSet()
+    }
+  }, [squares, rows])
+
+  const getRowsSet = () => {
+    let arrangedRows: Row[] = []
+
+    if (squares && squares.length === 64) {
+      Array.from({ length: 8 }).forEach((_, i) => {
+        const row: SquareObj[] = squares.slice(i * 8, (i + 1) * 8)
+        arrangedRows.push({
+          no: i + 1,
+          squares: row,
+        })
+      })
+    }
+
+    arrangedRows = arrangedRows.reverse()
+    setRows(arrangedRows)
+  }
 
   return (
     <div className="playground">
       {rows.length > 0 &&
-        rows.map(({ squares }, i) => (
+        rows.map(({ squares: sqs }, i) => (
           <div className="row flex" key={i}>
-            {squares.map((square, j) => (
-              <Square key={j} squareObj={square} i={i} j={j} />
+            {sqs.map((sq: SquareObj, j: number) => (
+              <Square key={j} squareObj={sq} i={i} j={j} />
             ))}
           </div>
         ))}
