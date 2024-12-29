@@ -9,9 +9,13 @@ export interface User {
 
 export type PieceColor = "white" | "black"
 
+export type ToMove = "white" | "black"
+
 export interface Square {
   id: string
   piece: string | null
+  isSelected: boolean
+  isToMove: boolean
 }
 
 export interface Row {

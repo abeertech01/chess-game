@@ -27,17 +27,10 @@ const PlayGround: FC<ComponentProps> = () => {
   return (
     <div className="playground">
       {rows.length > 0 &&
-        rows.map(({ squares, no }, i) => (
-          <div className="row flex" key={no}>
+        rows.map(({ squares }, i) => (
+          <div className="row flex" key={i}>
             {squares.map((square, j) => (
-              <div
-                className={`square w-[5rem] h-[5rem] text-black flex justify-center items-center ${
-                  (i + j) % 2 === 0 ? "bg-[#ffffff]" : "bg-emerald-700"
-                }`}
-                key={j}
-              >
-                <Square key={j} squareObj={square} />
-              </div>
+              <Square key={j} squareObj={square} i={i} j={j} />
             ))}
           </div>
         ))}

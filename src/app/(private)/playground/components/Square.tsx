@@ -8,13 +8,16 @@ import Image from "next/image"
 
 interface ComponentProps {
   squareObj: SquareObj
+  i: number
+  j: number
 }
 
-const Square: FC<ComponentProps> = ({ squareObj }) => {
+const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
   const [piece, setPiece] = useState<Piece | null>(null)
-  const [image, setImage] = useState()
+  const [isItSelected, setIsItSelected] = useState(squareObj.isSelected)
 
   const allThePieces = usePlayGroundStore((state) => state.allThePieces)
+  const selectASquare = usePlayGroundStore((state) => state.selectASquare)
 
   useEffect(() => {
     if (
@@ -30,8 +33,26 @@ const Square: FC<ComponentProps> = ({ squareObj }) => {
     }
   }, [allThePieces])
 
+  useEffect(() => {
+    console.log("squareObj.isSelected: ", squareObj.isSelected)
+  }, [squareObj])
+
+  const clickSquare = () => {
+    if (piece && !squareObj.isSelected) {
+      selectASquare(squareObj.id)
+    }
+  }
+
   return (
-    <>
+    <div
+      onClick={clickSquare}
+      className={`square w-[5rem] h-[5rem] text-black flex justify-center items-center ${
+        (i + j) % 2 === 0 ? "bg-[#ffffff]" : "bg-emerald-700"
+      } ${piece ? "cursor-pointer" : ""} ${
+        isItSelected ? "border-4 border-rose-500" : ""
+      }`}
+      key={j}
+    >
       <h1>{piece ? null : squareObj.id}</h1>
       {piece && (
         <Image
@@ -40,7 +61,7 @@ const Square: FC<ComponentProps> = ({ squareObj }) => {
           className="w-[3rem] h-[3rem]"
         />
       )}
-    </>
+    </div>
   )
 }
 

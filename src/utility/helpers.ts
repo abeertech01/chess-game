@@ -60,6 +60,8 @@ const generateSquares = () => {
       squares.push({
         id: ROW[j] + i,
         piece: null,
+        isSelected: false,
+        isToMove: false,
       })
     }
   }
