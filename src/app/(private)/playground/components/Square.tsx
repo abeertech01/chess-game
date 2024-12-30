@@ -5,6 +5,7 @@ import { Piece, Square as SquareObj } from "@/utility/types"
 import { FC, useEffect, useState } from "react"
 import { ALL_PIECES } from "@/constants/chess-board"
 import Image from "next/image"
+import { getSquareMoves } from "@/utility/helpers"
 
 interface ComponentProps {
   squareObj: SquareObj
@@ -40,6 +41,8 @@ const Square: FC<ComponentProps> = ({
 
   const clickSquare = () => {
     if (piece) {
+      const moves = getSquareMoves(piece, squareObj)
+      console.log("moves: ", moves)
       selectASquare(squareObj.id)
       toggleSelectedSquare()
     }

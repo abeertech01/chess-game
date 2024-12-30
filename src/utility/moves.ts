@@ -1,7 +1,6 @@
-import { Square } from "@/utility/types"
+import { COLUMNS } from "@/constants/chess-board"
+import { PieceColor, Square } from "@/utility/types"
 
-const pawnMove = (square: Square) => {}
+const pawnMoves = (square: Square) => {}
 
-const knightMove = (square: Square) => {}
-
-export { pawnMove, knightMove }
+export { pawnMoves }

@@ -38,5 +38,5 @@ export const ALL_PIECES: { [key: string]: any } = {
   },
 }
 
-export const ROW = ["a", "b", "c", "d", "e", "f", "g", "h"]
+export const COLUMNS = ["a", "b", "c", "d", "e", "f", "g", "h"]
 export const ROW_NUMBERS = 8

@@ -1,12 +1,13 @@
-import { ROW, ROW_NUMBERS } from "@/constants/chess-board"
+import { COLUMNS, ROW_NUMBERS } from "@/constants/chess-board"
 import { Piece, PieceColor, Row, Square } from "@/utility/types"
 import { pieceSetup } from "./initialPieceSetups"
+import * as pieceMoves from "./pieceMoves"
 
 const setDefaultSquare = (piece: string, color: PieceColor, number: number) => {
   if (piece === "pawn" && color === "white") {
-    return `${ROW[number - 1]}2`
+    return `${COLUMNS[number - 1]}2`
   } else if (piece === "pawn" && color === "black") {
-    return `${ROW[number - 1]}7`
+    return `${COLUMNS[number - 1]}7`
   } else {
     return pieceSetup(piece, color, number)
   }
@@ -55,9 +56,9 @@ const generateSquares = () => {
   const squares: Square[] = []
 
   for (let i = 1; i <= ROW_NUMBERS; i++) {
-    for (let j = 0; j < ROW.length; j++) {
+    for (let j = 0; j < COLUMNS.length; j++) {
       squares.push({
-        id: ROW[j] + i,
+        id: COLUMNS[j] + i,
         piece: null,
         isSelected: false,
         isToMove: false,
@@ -89,4 +90,18 @@ const selectDeselect = (squares: Square[], squareId: string) => {
   return updatedSquares
 }
 
-export { generateSquares, generatePieces, selectDeselect }
+const getSquareMoves = (piece: Piece, square: Square) => {
+  const { name } = piece
+  const { rookMoves, knightMoves } = pieceMoves
+
+  switch (name) {
+    case "rook":
+      return rookMoves(square)
+    case "knight":
+      return knightMoves(square)
+    default:
+      return []
+  }
+}
+
+export { generateSquares, generatePieces, selectDeselect, getSquareMoves }

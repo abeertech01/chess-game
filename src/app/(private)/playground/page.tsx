@@ -3,11 +3,7 @@
 import { FC, useEffect, useState } from "react"
 import Square from "@/app/(private)/playground/components/Square"
 import { usePlayGroundStore } from "@/store/playGroundStore"
-import {
-  generatePieces,
-  generateSquares,
-  selectDeselect,
-} from "@/utility/helpers"
+import { generatePieces, generateSquares } from "@/utility/helpers"
 import { Row, Square as SquareObj } from "@/utility/types"
 
 interface ComponentProps {}
