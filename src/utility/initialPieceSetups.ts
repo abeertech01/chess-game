@@ -1,4 +1,4 @@
-import { Piece, PieceColor } from "@/utility/types"
+import { PieceColor } from "@/utility/types"
 import { ROW } from "@/constants/chess-board"
 
 export const pieceSetup = (
