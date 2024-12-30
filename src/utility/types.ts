@@ -13,7 +13,7 @@ export type ToMove = "white" | "black"
 
 export interface Square {
   id: string
-  piece: string | null
+  piece: Piece | null
   isSelected: boolean
   isToMove: boolean
 }
