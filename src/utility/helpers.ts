@@ -68,4 +68,25 @@ const generateSquares = () => {
   return squares
 }
 
-export { generateSquares, generatePieces }
+const selectDeselect = (squares: Square[], squareId: string) => {
+  const updatedSquares: Square[] = squares
+  const prevSelectedIndex = squares.findIndex((sq: Square) => sq.isSelected)
+  const selectingSquareIndex = squares.findIndex(
+    (sq: Square) => sq.id === squareId
+  )
+
+  if (prevSelectedIndex === selectingSquareIndex) {
+    updatedSquares[prevSelectedIndex].isSelected = false
+  } else {
+    if (prevSelectedIndex !== -1) {
+      updatedSquares[prevSelectedIndex].isSelected = false
+      updatedSquares[selectingSquareIndex].isSelected = true
+    } else {
+      updatedSquares[selectingSquareIndex].isSelected = true
+    }
+  }
+
+  return updatedSquares
+}
+
+export { generateSquares, generatePieces, selectDeselect }

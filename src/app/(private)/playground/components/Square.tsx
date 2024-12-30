@@ -10,11 +10,16 @@ interface ComponentProps {
   squareObj: SquareObj
   i: number
   j: number
+  toggleSelectedSquare: () => void
 }
 
-const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
+const Square: FC<ComponentProps> = ({
+  squareObj,
+  i,
+  j,
+  toggleSelectedSquare,
+}) => {
   const [piece, setPiece] = useState<Piece | null>(null)
-  const [isItSelected, setIsItSelected] = useState(squareObj.isSelected)
 
   const allThePieces = usePlayGroundStore((state) => state.allThePieces)
   const selectASquare = usePlayGroundStore((state) => state.selectASquare)
@@ -33,13 +38,10 @@ const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
     }
   }, [allThePieces])
 
-  useEffect(() => {
-    console.log("squareObj.isSelected: ", squareObj.isSelected)
-  }, [squareObj])
-
   const clickSquare = () => {
-    if (piece && !squareObj.isSelected) {
+    if (piece) {
       selectASquare(squareObj.id)
+      toggleSelectedSquare()
     }
   }
 
@@ -49,7 +51,7 @@ const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
       className={`square w-[5rem] h-[5rem] text-black flex justify-center items-center ${
         (i + j) % 2 === 0 ? "bg-[#ffffff]" : "bg-emerald-700"
       } ${piece ? "cursor-pointer" : ""} ${
-        isItSelected ? "border-4 border-rose-500" : ""
+        squareObj.isSelected ? "border-4 border-rose-500" : ""
       }`}
       key={j}
     >
