@@ -1,5 +1,5 @@
 import { COLUMNS } from "@/constants/chess-board"
-import { Square } from "@/utility/types"
+import { Square } from "../types"
 
 export default (square: Square) => {
   const { id } = square
@@ -9,6 +9,11 @@ export default (square: Square) => {
 
   const allMoves = []
 
+  // top
+  for (let i = rowNumber + 1; i <= 8; i++) {
+    allMoves.push(`${column}${i}`)
+  }
+
   // top left
   if (columnIndex > 0 && rowNumber < 8) {
     let theRow = rowNumber
@@ -17,6 +22,7 @@ export default (square: Square) => {
       allMoves.push(`${COLUMNS[i]}${theRow}`)
     }
   }
+
   // top right
   if (columnIndex < 7 && rowNumber < 8) {
     let theRow = rowNumber
@@ -25,6 +31,12 @@ export default (square: Square) => {
       allMoves.push(`${COLUMNS[i]}${theRow}`)
     }
   }
+
+  // bottom
+  for (let i = rowNumber - 1; i >= 1; i--) {
+    allMoves.push(`${column}${i}`)
+  }
+
   // bottom left
   if (columnIndex > 0 && rowNumber > 1) {
     let theRow = rowNumber
@@ -33,6 +45,7 @@ export default (square: Square) => {
       allMoves.push(`${COLUMNS[i]}${theRow}`)
     }
   }
+
   // bottom right
   if (columnIndex < 7 && rowNumber > 1) {
     let theRow = rowNumber
@@ -40,6 +53,16 @@ export default (square: Square) => {
       theRow -= 1
       allMoves.push(`${COLUMNS[i]}${theRow}`)
     }
+  }
+
+  // left
+  for (let i = columnIndex - 1; i >= 0; i--) {
+    allMoves.push(`${COLUMNS[i]}${rowNumber}`)
+  }
+
+  // right
+  for (let i = columnIndex + 1; i < COLUMNS.length; i++) {
+    allMoves.push(`${COLUMNS[i]}${rowNumber}`)
   }
 
   return allMoves
