@@ -130,13 +130,15 @@ const selectDeselectSquares = (squares: Square[], squareId: string) => {
 
 const getSquareMoves = (square: Square) => {
   const { name } = square.piece!
-  const { rookMoves, knightMoves } = pieceMoves
+  const { rookMoves, knightMoves, bishopMoves } = pieceMoves
 
   switch (name) {
     case "rook":
       return rookMoves(square)
     case "knight":
       return knightMoves(square)
+    case "bishop":
+      return bishopMoves(square)
     default:
       return []
   }

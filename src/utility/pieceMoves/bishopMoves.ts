@@ -12,17 +12,37 @@ export default (square: Square) => {
   // TODO: Build logics since it's still not completed.
 
   // top left
-  if (columnIndex > 0 && rowNumber < 8)
-    allMoves.push(`${COLUMNS[columnIndex - 1]}${rowNumber + 1}`)
+  if (columnIndex > 0 && rowNumber < 8) {
+    let theRow = rowNumber
+    for (let i = columnIndex - 1; i >= 0; i--) {
+      theRow += 1
+      allMoves.push(`${COLUMNS[i]}${theRow}`)
+    }
+  }
   // top right
-  if (columnIndex < 7 && rowNumber < 8)
-    allMoves.push(`${COLUMNS[columnIndex + 1]}${rowNumber + 1}`)
+  if (columnIndex < 7 && rowNumber < 8) {
+    let theRow = rowNumber
+    for (let i = columnIndex + 1; i <= 7; i++) {
+      theRow += 1
+      allMoves.push(`${COLUMNS[i]}${theRow}`)
+    }
+  }
   // bottom left
-  if (columnIndex > 0 && rowNumber > 1)
-    allMoves.push(`${COLUMNS[columnIndex - 1]}${rowNumber - 1}`)
+  if (columnIndex > 0 && rowNumber > 1) {
+    let theRow = rowNumber
+    for (let i = columnIndex - 1; i >= 0; i--) {
+      theRow -= 1
+      allMoves.push(`${COLUMNS[i]}${theRow}`)
+    }
+  }
   // bottom right
-  if (columnIndex < 7 && rowNumber > 1)
-    allMoves.push(`${COLUMNS[columnIndex + 1]}${rowNumber - 1}`)
+  if (columnIndex < 7 && rowNumber > 1) {
+    let theRow = rowNumber
+    for (let i = columnIndex + 1; i <= 7; i++) {
+      theRow -= 1
+      allMoves.push(`${COLUMNS[i]}${theRow}`)
+    }
+  }
 
   return allMoves
 }
