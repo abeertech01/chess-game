@@ -3,7 +3,7 @@
 import { FC, useEffect, useState } from "react"
 import Square from "@/app/(private)/playground/components/Square"
 import { usePlayGroundStore } from "@/store/playGroundStore"
-import { generatePieces, generateSquares } from "@/utility/helpers"
+import { generateSquares } from "@/utility/helpers"
 import { Row, Square as SquareObj } from "@/utility/types"
 
 interface ComponentProps {}
@@ -12,14 +12,14 @@ const PlayGround: FC<ComponentProps> = () => {
   const [rows, setRows] = useState<Row[]>([])
   const squares = usePlayGroundStore((state) => state.squares)
   const setSquares = usePlayGroundStore((state) => state.setSquares)
-  const setAllThePieces = usePlayGroundStore((state) => state.setAllThePieces)
+  const totalMoves = usePlayGroundStore((state) => state.totalMoves)
 
   useEffect(() => {
-    const generatedSquares = generateSquares()
-    const allThePieces = generatePieces()
+    if (totalMoves === 0) {
+      const generatedSquares = generateSquares()
 
-    setSquares(generatedSquares)
-    setAllThePieces(allThePieces)
+      setSquares(generatedSquares)
+    }
   }, [])
 
   useEffect(() => {

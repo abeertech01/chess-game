@@ -1,5 +1,5 @@
 import { COLUMNS, ROW_NUMBERS } from "@/constants/chess-board"
-import { Piece, PieceColor, Row, Square } from "@/utility/types"
+import { Piece, PieceColor, Square } from "@/utility/types"
 import { pieceSetup } from "./initialPieceSetups"
 import * as pieceMoves from "./pieceMoves"
 
@@ -49,17 +49,22 @@ const generatePieces = () => {
   const whitePieces = whiteOrBlackPieces("white")
   const blackPieces = whiteOrBlackPieces("black")
 
-  return { white: whitePieces, black: blackPieces }
+  return [...whitePieces, ...blackPieces]
 }
 
 const generateSquares = () => {
   const squares: Square[] = []
+  const allThePieces = generatePieces()
 
   for (let i = 1; i <= ROW_NUMBERS; i++) {
     for (let j = 0; j < COLUMNS.length; j++) {
+      const squareId = `${COLUMNS[j]}${i}`
+      const piece = allThePieces.find(
+        (p: Piece) => p.default_square === squareId
+      )
       squares.push({
-        id: COLUMNS[j] + i,
-        piece: null,
+        id: squareId,
+        piece: piece ?? null,
         isSelected: false,
         isToMove: false,
       })
@@ -69,29 +74,62 @@ const generateSquares = () => {
   return squares
 }
 
-const selectDeselect = (squares: Square[], squareId: string) => {
-  const updatedSquares: Square[] = squares
+const selectDeselectToMoves = (
+  sqIndex: number,
+  squares: Square[],
+  selectOrDeselect: true | false
+) => {
+  const updatedSqs = squares
+  const pieceMoves = getSquareMoves(updatedSqs[sqIndex])
+
+  updatedSqs[sqIndex].isSelected = selectOrDeselect
+  pieceMoves.forEach((move: string) => {
+    const index = updatedSqs.findIndex((sq: Square) => sq.id === move)
+    updatedSqs[index].isToMove = selectOrDeselect
+  })
+
+  return updatedSqs
+}
+
+const selectDeselectSquares = (squares: Square[], squareId: string) => {
+  let updatedSquares: Square[] = squares
   const prevSelectedIndex = squares.findIndex((sq: Square) => sq.isSelected)
   const selectingSquareIndex = squares.findIndex(
     (sq: Square) => sq.id === squareId
   )
 
   if (prevSelectedIndex === selectingSquareIndex) {
-    updatedSquares[prevSelectedIndex].isSelected = false
+    updatedSquares = selectDeselectToMoves(
+      prevSelectedIndex,
+      updatedSquares,
+      false
+    )
   } else {
     if (prevSelectedIndex !== -1) {
-      updatedSquares[prevSelectedIndex].isSelected = false
-      updatedSquares[selectingSquareIndex].isSelected = true
+      updatedSquares = selectDeselectToMoves(
+        prevSelectedIndex,
+        updatedSquares,
+        false
+      )
+      updatedSquares = selectDeselectToMoves(
+        selectingSquareIndex,
+        updatedSquares,
+        true
+      )
     } else {
-      updatedSquares[selectingSquareIndex].isSelected = true
+      updatedSquares = selectDeselectToMoves(
+        selectingSquareIndex,
+        updatedSquares,
+        true
+      )
     }
   }
 
   return updatedSquares
 }
 
-const getSquareMoves = (piece: Piece, square: Square) => {
-  const { name } = piece
+const getSquareMoves = (square: Square) => {
+  const { name } = square.piece!
   const { rookMoves, knightMoves } = pieceMoves
 
   switch (name) {
@@ -104,4 +142,4 @@ const getSquareMoves = (piece: Piece, square: Square) => {
   }
 }
 
-export { generateSquares, generatePieces, selectDeselect, getSquareMoves }
+export { generateSquares, selectDeselectSquares, getSquareMoves }
