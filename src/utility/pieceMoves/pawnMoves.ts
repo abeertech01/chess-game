@@ -20,16 +20,23 @@ export default (square: Square, color: PieceColor) => {
   if (color === "white") {
     // top
     if (rowNumber === 2) {
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber + 1}`)
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber + 2}`)
+      const sqId1 = `${COLUMNS[columnIndex]}${rowNumber + 1}`
+      const sqId2 = `${COLUMNS[columnIndex]}${rowNumber + 2}`
+      const recordSq1 = squares.find((sq) => sq.id === sqId1)
+      const recordSq2 = squares.find((sq) => sq.id === sqId2)
+      if (recordSq1?.piece === null) allMoves.push(sqId1)
+      if (recordSq1?.piece === null && recordSq2?.piece === null)
+        allMoves.push(sqId2)
     } else {
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber + 1}`)
+      const sqId = `${COLUMNS[columnIndex]}${rowNumber + 1}`
+      const recordSq = squares.find((sq) => sq.id === sqId)
+      if (recordSq?.piece === null) allMoves.push(sqId)
     }
     // top left
     if (columnIndex > 0 && rowNumber < 8) {
       const squareId = `${COLUMNS[columnIndex - 1]}${rowNumber + 1}`
       const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece) {
+      if (sqRecord?.piece?.color === "black") {
         allMoves.push(squareId)
       }
     }
@@ -37,23 +44,30 @@ export default (square: Square, color: PieceColor) => {
     if (columnIndex < 7 && rowNumber < 8) {
       const squareId = `${COLUMNS[columnIndex + 1]}${rowNumber + 1}`
       const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece) {
+      if (sqRecord?.piece?.color === "black") {
         allMoves.push(squareId)
       }
     }
   } else {
     // bottom
     if (rowNumber === 7) {
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber - 1}`)
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber - 2}`)
+      const sqId1 = `${COLUMNS[columnIndex]}${rowNumber - 1}`
+      const sqId2 = `${COLUMNS[columnIndex]}${rowNumber - 2}`
+      const recordSq1 = squares.find((sq) => sq.id === sqId1)
+      const recordSq2 = squares.find((sq) => sq.id === sqId2)
+      if (recordSq1?.piece === null) allMoves.push(sqId1)
+      if (recordSq1?.piece === null && recordSq2?.piece === null)
+        allMoves.push(sqId2)
     } else {
-      allMoves.push(`${COLUMNS[columnIndex]}${rowNumber - 1}`)
+      const sqId = `${COLUMNS[columnIndex]}${rowNumber - 1}`
+      const recordSq = squares.find((sq) => sq.id === sqId)
+      if (recordSq?.piece === null) allMoves.push(sqId)
     }
     // bottom left
     if (columnIndex > 0 && rowNumber > 1) {
       const squareId = `${COLUMNS[columnIndex - 1]}${rowNumber - 1}`
       const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece) {
+      if (sqRecord?.piece?.color === "white") {
         allMoves.push(squareId)
       }
     }
@@ -61,7 +75,7 @@ export default (square: Square, color: PieceColor) => {
     if (columnIndex < 7 && rowNumber > 1) {
       const squareId = `${COLUMNS[columnIndex + 1]}${rowNumber - 1}`
       const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece) {
+      if (sqRecord?.piece?.color === "white") {
         allMoves.push(squareId)
       }
     }

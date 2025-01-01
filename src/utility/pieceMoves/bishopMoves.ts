@@ -1,11 +1,18 @@
 import { COLUMNS } from "@/constants/chess-board"
+import { usePlayGroundStore } from "@/store/playGroundStore"
 import { Square } from "@/utility/types"
+
+const getSquares = () => {
+  const squares = usePlayGroundStore.getState().squares
+  return squares
+}
 
 export default (square: Square) => {
   const { id } = square
   const [column, row] = id.split("")
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
+  const squares = getSquares()
 
   const allMoves: string[] = []
 
@@ -16,7 +23,19 @@ export default (square: Square) => {
       if (_row === 8) break
       _row = _row + 1
       const sqId = `${COLUMNS[i]}${_row}`
-      allMoves.push(sqId)
+      const pieceExistingSq = squares.find(
+        (sq) => sq.id === sqId && sq.piece !== null
+      )
+      if (pieceExistingSq) {
+        if (pieceExistingSq.piece?.color !== square.piece?.color) {
+          allMoves.push(sqId)
+          break
+        } else {
+          break
+        }
+      } else {
+        allMoves.push(sqId)
+      }
     }
   }
 
@@ -27,7 +46,19 @@ export default (square: Square) => {
       if (_row === 8) break
       _row = _row + 1
       const sqId = `${COLUMNS[i]}${_row}`
-      allMoves.push(sqId)
+      const pieceExistingSq = squares.find(
+        (sq) => sq.id === sqId && sq.piece !== null
+      )
+      if (pieceExistingSq) {
+        if (pieceExistingSq.piece?.color !== square.piece?.color) {
+          allMoves.push(sqId)
+          break
+        } else {
+          break
+        }
+      } else {
+        allMoves.push(sqId)
+      }
     }
   }
 
@@ -38,7 +69,19 @@ export default (square: Square) => {
       if (_row === 1) break
       _row = _row - 1
       const sqId = `${COLUMNS[i]}${_row}`
-      allMoves.push(sqId)
+      const pieceExistingSq = squares.find(
+        (sq) => sq.id === sqId && sq.piece !== null
+      )
+      if (pieceExistingSq) {
+        if (pieceExistingSq.piece?.color !== square.piece?.color) {
+          allMoves.push(sqId)
+          break
+        } else {
+          break
+        }
+      } else {
+        allMoves.push(sqId)
+      }
     }
   }
 
@@ -49,7 +92,19 @@ export default (square: Square) => {
       if (_row === 1) break
       _row = _row - 1
       const sqId = `${COLUMNS[i]}${_row}`
-      allMoves.push(sqId)
+      const pieceExistingSq = squares.find(
+        (sq) => sq.id === sqId && sq.piece !== null
+      )
+      if (pieceExistingSq) {
+        if (pieceExistingSq.piece?.color !== square.piece?.color) {
+          allMoves.push(sqId)
+          break
+        } else {
+          break
+        }
+      } else {
+        allMoves.push(sqId)
+      }
     }
   }
 
