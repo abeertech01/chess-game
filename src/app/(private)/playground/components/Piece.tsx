@@ -1,22 +1,24 @@
 import { FC } from "react"
 import Image from "next/image"
+import { Piece as PieceType } from "@/utility/types"
 import { ALL_PIECES } from "@/constants/chess-board"
 
 interface ComponentProps {
-  piece: string
-  color: "black" | "white"
+  piece: PieceType
+  className: string
 }
 
-const Piece: FC<ComponentProps> = ({ piece, color }) => {
+const Piece: FC<ComponentProps> = ({ piece, className }) => {
   return (
-    <div className="w-full h-full">
+    <>
       <Image
-        src={ALL_PIECES[piece][color]}
-        alt={piece}
-        width={40}
-        height={40}
+        src={ALL_PIECES[piece.name][piece.color]}
+        alt={piece.name}
+        width={80}
+        height={80}
+        className={className}
       />
-    </div>
+    </>
   )
 }
 

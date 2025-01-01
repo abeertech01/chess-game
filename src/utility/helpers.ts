@@ -77,10 +77,11 @@ const generateSquares = () => {
 const selectDeselectToMoves = (
   sqIndex: number,
   squares: Square[],
-  selectOrDeselect: true | false
+  selectOrDeselect: boolean
 ) => {
-  const updatedSqs = squares
+  const updatedSqs = [...squares]
   const pieceMoves = getSquareMoves(updatedSqs[sqIndex])
+  // console.log("pieceMoves ", pieceMoves)
 
   updatedSqs[sqIndex].isSelected = selectOrDeselect
   pieceMoves.forEach((move: string) => {
@@ -157,4 +158,20 @@ const getSquareMoves = (square: Square) => {
   }
 }
 
-export { generateSquares, selectDeselectSquares, getSquareMoves }
+const deselectAllSquares = (squares: Square[]) => {
+  const updatedSquares = [...squares]
+
+  for (let i = 0; i < updatedSquares.length; i++) {
+    updatedSquares[i].isSelected = false
+    updatedSquares[i].isToMove = false
+  }
+
+  return updatedSquares
+}
+
+export {
+  generateSquares,
+  selectDeselectSquares,
+  getSquareMoves,
+  deselectAllSquares,
+}
