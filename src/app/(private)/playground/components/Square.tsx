@@ -3,8 +3,7 @@
 import { usePlayGroundStore } from "@/store/playGroundStore"
 import { Square as SquareObj } from "@/utility/types"
 import { FC } from "react"
-import { ALL_PIECES } from "@/constants/chess-board"
-import Image from "next/image"
+import Piece from "@/app/(private)/playground/components/Piece"
 
 interface ComponentProps {
   squareObj: SquareObj
@@ -24,12 +23,16 @@ const Square: FC<ComponentProps> = ({
   const toMovePlayer = usePlayGroundStore((state) => state.toMovePlayer)
 
   const clickSquare = () => {
-    if (squareObj.piece && squareObj.piece.color === toMovePlayer) {
+    if (
+      squareObj.piece &&
+      squareObj.piece.color === toMovePlayer &&
+      !squareObj.isToMove
+    ) {
       selectASquare(squareObj.id)
       toggleSelectedSquare()
     }
 
-    if (squareObj.piece === null && squareObj.isToMove) {
+    if (squareObj.isToMove) {
       movePiece(squareObj.id)
       toggleSelectedSquare()
     }
@@ -53,11 +56,7 @@ const Square: FC<ComponentProps> = ({
     >
       <h1>{squareObj.piece ? null : squareObj.id}</h1>
       {squareObj.piece && (
-        <Image
-          src={ALL_PIECES[squareObj.piece.name][squareObj.piece.color]}
-          alt={squareObj.piece.name}
-          className="w-[3rem] h-[3rem]"
-        />
+        <Piece piece={squareObj.piece} className={"w-[3rem] h-[3rem]"} />
       )}
     </div>
   )

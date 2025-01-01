@@ -1,11 +1,12 @@
 import { deselectAllSquares, selectDeselectSquares } from "@/utility/helpers"
-import { PieceColor, Square } from "@/utility/types"
+import { Piece, PieceColor, Square } from "@/utility/types"
 import { create } from "zustand"
 
 type PlayGroundStore = {
   squares: Square[]
   totalMoves: number
   toMovePlayer: PieceColor
+  capturedPieces: Piece[]
   incrementMoves: () => void
   selectASquare: (squareId: string) => void
   setSquares: (squares: Square[]) => void
@@ -16,6 +17,7 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
   squares: [],
   totalMoves: 0,
   toMovePlayer: "white",
+  capturedPieces: [],
   incrementMoves: () => set((state) => ({ totalMoves: state.totalMoves + 1 })),
   selectASquare: (squareId) =>
     set((state) => {
@@ -38,7 +40,15 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       const movingSqIndex = updatedSquares.findIndex(
         (square) => square.id === squareId
       )
-      if (movingSqIndex !== -1) updatedSquares[movingSqIndex].piece = thePiece
+
+      let capturedPiece: Piece | null = null
+      // I suppose movingSqIndex is not -1
+      if (updatedSquares[movingSqIndex].piece) {
+        capturedPiece = updatedSquares[movingSqIndex].piece
+        updatedSquares[movingSqIndex].piece = thePiece
+      } else {
+        updatedSquares[movingSqIndex].piece = thePiece
+      }
 
       const deselectedAllSquares = deselectAllSquares(updatedSquares)
 
@@ -53,6 +63,9 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
         squares: deselectedAllSquares,
         totalMoves: state.totalMoves + 1,
         toMovePlayer: changedPlayer,
+        capturedPieces: capturedPiece
+          ? [...state.capturedPieces, capturedPiece]
+          : state.capturedPieces,
       }
     }),
 }))
