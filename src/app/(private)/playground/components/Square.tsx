@@ -21,9 +21,10 @@ const Square: FC<ComponentProps> = ({
 }) => {
   const selectASquare = usePlayGroundStore((state) => state.selectASquare)
   const movePiece = usePlayGroundStore((state) => state.movePiece)
+  const toMovePlayer = usePlayGroundStore((state) => state.toMovePlayer)
 
   const clickSquare = () => {
-    if (squareObj.piece) {
+    if (squareObj.piece && squareObj.piece.color === toMovePlayer) {
       selectASquare(squareObj.id)
       toggleSelectedSquare()
     }
