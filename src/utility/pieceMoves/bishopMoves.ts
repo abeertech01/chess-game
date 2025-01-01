@@ -7,38 +7,49 @@ export default (square: Square) => {
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
 
-  const allMoves = []
+  const allMoves: string[] = []
 
-  // top left
+  // top left [column -, row +]
   if (columnIndex > 0 && rowNumber < 8) {
-    let theRow = rowNumber
+    let _row = rowNumber
     for (let i = columnIndex - 1; i >= 0; i--) {
-      theRow += 1
-      allMoves.push(`${COLUMNS[i]}${theRow}`)
+      if (_row === 8) break
+      _row = _row + 1
+      const sqId = `${COLUMNS[i]}${_row}`
+      allMoves.push(sqId)
     }
   }
-  // top right
+
+  // top right [column +, row +]
   if (columnIndex < 7 && rowNumber < 8) {
-    let theRow = rowNumber
+    let _row = rowNumber
     for (let i = columnIndex + 1; i <= 7; i++) {
-      theRow += 1
-      allMoves.push(`${COLUMNS[i]}${theRow}`)
+      if (_row === 8) break
+      _row = _row + 1
+      const sqId = `${COLUMNS[i]}${_row}`
+      allMoves.push(sqId)
     }
   }
-  // bottom left
+
+  // bottom left [column -, row -]
   if (columnIndex > 0 && rowNumber > 1) {
-    let theRow = rowNumber
+    let _row = rowNumber
     for (let i = columnIndex - 1; i >= 0; i--) {
-      theRow -= 1
-      allMoves.push(`${COLUMNS[i]}${theRow}`)
+      if (_row === 1) break
+      _row = _row - 1
+      const sqId = `${COLUMNS[i]}${_row}`
+      allMoves.push(sqId)
     }
   }
-  // bottom right
+
+  // bottom right [colum +, row -]
   if (columnIndex < 7 && rowNumber > 1) {
-    let theRow = rowNumber
+    let _row = rowNumber
     for (let i = columnIndex + 1; i <= 7; i++) {
-      theRow -= 1
-      allMoves.push(`${COLUMNS[i]}${theRow}`)
+      if (_row === 1) break
+      _row = _row - 1
+      const sqId = `${COLUMNS[i]}${_row}`
+      allMoves.push(sqId)
     }
   }
 
