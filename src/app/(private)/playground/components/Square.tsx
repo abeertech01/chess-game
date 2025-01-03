@@ -1,8 +1,12 @@
 "use client"
 
 import { usePlayGroundStore } from "@/store/playGroundStore"
-import { Square as SquareObj } from "@/utility/types"
-import { FC } from "react"
+import {
+  // KingRelatedSquares,
+  PieceColor,
+  Square as SquareObj,
+} from "@/utility/types"
+import { FC, useEffect, useState } from "react"
 import Piece from "@/app/(private)/playground/components/Piece"
 
 interface ComponentProps {
@@ -10,6 +14,7 @@ interface ComponentProps {
   i: number
   j: number
   toggleSelectedSquare: () => void
+  // kingRelatedSquares: KingRelatedSquares | null
 }
 
 const Square: FC<ComponentProps> = ({
@@ -17,10 +22,18 @@ const Square: FC<ComponentProps> = ({
   i,
   j,
   toggleSelectedSquare,
+  // kingRelatedSquares,
 }) => {
   const selectASquare = usePlayGroundStore((state) => state.selectASquare)
   const movePiece = usePlayGroundStore((state) => state.movePiece)
   const toMovePlayer = usePlayGroundStore((state) => state.toMovePlayer)
+  const [opponentColor, setOpponentColor] = useState<PieceColor | null>(
+    squareObj.piece && (squareObj.piece.color === "white" ? "black" : "white")
+  )
+
+  // useEffect(()=> {
+
+  // }, [kingRelatedSquares])
 
   const clickSquare = () => {
     if (
@@ -51,8 +64,15 @@ const Square: FC<ComponentProps> = ({
         squareObj.isToMove
           ? "after:absolute after:w-[calc(100%-0.6rem)] after:h-[calc(100%-0.6rem)] after:left-1/2 after:-translate-x-1/2 after:top-1/2 after:-translate-y-1/2 after:border-4 after:border-cyan-400 after:rounded-md"
           : ""
-      }`}
+      } 
+      `}
       key={j}
+      // ${
+      //   kingRelatedSquares !== null &&
+      //   kingRelatedSquares[opponentColor!].king_checked
+      //     ? "bg-rose-500!"
+      //     : ""
+      // }
     >
       <h1>{squareObj.piece ? null : squareObj.id}</h1>
       {squareObj.piece && (

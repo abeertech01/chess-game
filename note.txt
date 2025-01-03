@@ -1,3 +1,2 @@
-[-] Piece.tsx doesn't seem to be needed.
 [-] incrementMoves doesn't seem to be needed.
 [-] PlayGroundStore - I supposed movingSqIndex will not be -1

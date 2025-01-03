@@ -25,5 +25,18 @@ export interface Piece {
   name: string
   number: number
   color: PieceColor
-  default_square: string | undefined
+  default_square: string
 }
+
+// export interface KingRelatedSquares {
+//   white: {
+//     king_moves: string[]
+//     king_square: Square
+//     king_checked: boolean
+//   }
+//   black: {
+//     king_moves: string[]
+//     king_square: Square
+//     king_checked: boolean
+//   }
+// }
