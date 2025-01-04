@@ -1,8 +1,8 @@
 import {
   deselectAllSquares,
   generateSquares,
-  getSquareMoves,
   selectDeselectSquares,
+  setSquareMoves,
 } from "@/utility/helpers"
 import { Piece, PieceColor, Square } from "@/utility/types"
 import { create } from "zustand"
@@ -56,65 +56,21 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
     }),
   setSquares: () =>
     set(() => {
+      // generate squares ✅
       let generatedSquares: Square[] = generateSquares()
 
-      generatedSquares = generatedSquares.map((sq: Square) => {
-        if (sq.piece) {
-          const allMoves: {
-            allToMoves: string[]
-            rangeMoves: string[]
-          } | null = getSquareMoves(sq, generatedSquares)
-
-          return {
-            ...sq,
-            piece: {
-              ...sq.piece,
-              toMoves: allMoves!.allToMoves,
-              range_moves: allMoves!.rangeMoves,
-            },
-          }
-        } else {
-          return sq
-        }
-      })
-
-      // const kings = generatedSquares.map((sq) => {
-      //   if (sq.piece && sq.piece.name === "king") return sq
-      // })
-
-      // const kingsInfo = {} as KingsInfo
-      // kings.forEach((king) => {
-      //   if (king?.piece?.color === "white") {
-      //     const moves = getSquareMoves(king)
-      //     kingsInfo.white = { king, moves }
-      //   }
-      //   if (king?.piece?.color === "black") {
-      //     const moves = getSquareMoves(king)
-      //     kingsInfo.black = { king, moves }
-      //   }
-      // })
+      // get toMoves and rangeMoves and add to respective squares
+      generatedSquares = setSquareMoves(generatedSquares)
 
       return {
         squares: generatedSquares,
-        // kingRelatedSquares: {
-        //   white: {
-        //     king_square: kingsInfo.white.king,
-        //     king_moves: kingsInfo.white.moves,
-        //     king_checked: false,
-        //   },
-        //   black: {
-        //     king_square: kingsInfo.black.king,
-        //     king_moves: kingsInfo.black.moves,
-        //     king_checked: false,
-        //   },
-        // },
       }
     }),
   movePiece: (squareId) =>
     set((state) => {
       // thePiece is a mutable variable ✅
       let thePiece: Piece | null = null
-      let updatedSquares = [...state.squares]
+      let updatedSquares = state.squares
       // get the selected square index (from) ✅
       const fromSqIndex = updatedSquares.findIndex(
         (square) => square.isSelected === true
@@ -150,22 +106,8 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       // deselect isSelected and isToMove ✅
       updatedSquares = deselectAllSquares(updatedSquares)
 
-      // get all Moves for the new square index ✅
-      const allMoves = getSquareMoves(
-        updatedSquares[movingSqIndex],
-        updatedSquares
-      )
-
-      // prepare a piece with updated toMoves and range_moves ✅
-      const preparedPiece: Piece = {
-        ...updatedSquares[movingSqIndex].piece!,
-        toMoves: allMoves!.allToMoves,
-        range_moves: allMoves!.rangeMoves,
-      }
-
-      // update moving index square's piece by the prepared piece. ✅
-      updatedSquares[movingSqIndex].piece = preparedPiece
-      console.log(updatedSquares[movingSqIndex].piece)
+      // get all the Moves set ✅
+      updatedSquares = setSquareMoves(updatedSquares)
 
       let changedPlayer = state.toMovePlayer
       if (state.toMovePlayer === "white") {

@@ -152,9 +152,31 @@ const deselectAllSquares = (squares: Square[]) => {
   return updatedSquares
 }
 
+const setSquareMoves = (squares: Square[]) => {
+  return squares.map((sq: Square) => {
+    if (sq.piece) {
+      const allMoves: {
+        allToMoves: string[]
+        rangeMoves: string[]
+      } | null = getSquareMoves(sq, squares)
+
+      return {
+        ...sq,
+        piece: {
+          ...sq.piece,
+          toMoves: allMoves!.allToMoves,
+          range_moves: allMoves!.rangeMoves,
+        },
+      }
+    } else {
+      return sq
+    }
+  })
+}
+
 export {
   generateSquares,
   selectDeselectSquares,
-  getSquareMoves,
   deselectAllSquares,
+  setSquareMoves,
 }

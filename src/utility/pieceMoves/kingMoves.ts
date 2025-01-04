@@ -5,8 +5,7 @@ export default (squareId: string, squares: Square[]) => {
   const [column, row] = squareId.split("")
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
-  const allSquares = squares
-  const square = allSquares.find((sq) => sq.id === squareId) as Square
+  const square = squares.find((sq) => sq.id === squareId) as Square
 
   const allToMoves = []
   const rangeMoves = []
@@ -14,7 +13,7 @@ export default (squareId: string, squares: Square[]) => {
   // top
   if (rowNumber < 8) {
     const sqId = `${COLUMNS[columnIndex]}${rowNumber + 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -30,7 +29,7 @@ export default (squareId: string, squares: Square[]) => {
   // top left
   if (columnIndex > 0 && rowNumber < 8) {
     const sqId = `${COLUMNS[columnIndex - 1]}${rowNumber + 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -46,7 +45,7 @@ export default (squareId: string, squares: Square[]) => {
   // top right
   if (columnIndex < 7 && rowNumber < 8) {
     const sqId = `${COLUMNS[columnIndex + 1]}${rowNumber + 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -62,7 +61,7 @@ export default (squareId: string, squares: Square[]) => {
   // left
   if (columnIndex > 0) {
     const sqId = `${COLUMNS[columnIndex - 1]}${rowNumber}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -78,7 +77,7 @@ export default (squareId: string, squares: Square[]) => {
   // bottom
   if (rowNumber > 1) {
     const sqId = `${COLUMNS[columnIndex]}${rowNumber - 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -94,7 +93,7 @@ export default (squareId: string, squares: Square[]) => {
   // bottom left
   if (columnIndex > 0 && rowNumber > 1) {
     const sqId = `${COLUMNS[columnIndex - 1]}${rowNumber - 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -110,7 +109,7 @@ export default (squareId: string, squares: Square[]) => {
   // bottom right
   if (columnIndex < 7 && rowNumber > 1) {
     const sqId = `${COLUMNS[columnIndex + 1]}${rowNumber - 1}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {
@@ -126,7 +125,7 @@ export default (squareId: string, squares: Square[]) => {
   // right
   if (columnIndex < 7) {
     const sqId = `${COLUMNS[columnIndex + 1]}${rowNumber}`
-    const pieceExistingSq = allSquares.find(
+    const pieceExistingSq = squares.find(
       (sq) => sq.id === sqId && sq.piece !== null
     )
     if (pieceExistingSq) {

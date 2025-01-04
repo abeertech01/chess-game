@@ -1,75 +1,91 @@
 import { COLUMNS } from "@/constants/chess-board"
-import { Square } from "@/utility/types"
+import { Square } from "../types"
 
 export default (squareId: string, squares: Square[]) => {
   const [column, row] = squareId.split("")
   const columnIndex = COLUMNS.indexOf(column)
-  const rowNumber = parseInt(row)
-  const allSquares = squares
-  const square = allSquares.find((sq) => sq.id === squareId) as Square
+  const rowNumber = Number(row)
+  const { piece: playerPiece } = squares.find(
+    (sq) => sq.id === squareId
+  ) as Square
 
-  const allToMoves = []
-  const rangeMoves = []
+  const allToMoves: string[] = []
+  const rangeMoves: string[] = []
 
   // left
-  for (let i = columnIndex - 1; i >= 0; i--) {
-    const sqId = `${COLUMNS[i]}${rowNumber}`
-    const pieceExistingSq = allSquares.find(
-      (sq) => sq.id === sqId && sq.piece !== null
-    )
-    if (pieceExistingSq) {
-      if (pieceExistingSq.piece?.color !== square.piece?.color) {
-        allToMoves.push(sqId)
+  if (columnIndex > 0) {
+    let pcExisted = false
+    for (let i = columnIndex - 1; i >= 0; i--) {
+      const sqId = `${COLUMNS[i]}${rowNumber}`
+      const { piece: sqPiece } = squares.find((sq) => sq.id === sqId) as Square
+
+      if (!pcExisted && sqPiece) {
+        if (sqPiece.color !== playerPiece?.color) allToMoves.push(sqId)
+
+        pcExisted = true
       }
-    } else {
-      allToMoves.push(sqId)
+
+      if (!pcExisted && !sqPiece) allToMoves.push(sqId)
+
+      rangeMoves.push(sqId)
     }
-    rangeMoves.push(sqId)
   }
+
   // right
-  for (let i = columnIndex + 1; i < COLUMNS.length; i++) {
-    const sqId = `${COLUMNS[i]}${rowNumber}`
-    const pieceExistingSq = allSquares.find(
-      (sq) => sq.id === sqId && sq.piece !== null
-    )
-    if (pieceExistingSq) {
-      if (pieceExistingSq.piece?.color !== square.piece?.color) {
-        allToMoves.push(sqId)
+  if (columnIndex < 7) {
+    let pcExisted = false
+    for (let i = columnIndex + 1; i < COLUMNS.length; i++) {
+      const sqId = `${COLUMNS[i]}${rowNumber}`
+      const { piece: sqPiece } = squares.find((sq) => sq.id === sqId) as Square
+
+      if (!pcExisted && sqPiece) {
+        if (sqPiece.color !== playerPiece?.color) allToMoves.push(sqId)
+
+        pcExisted = true
       }
-    } else {
-      allToMoves.push(sqId)
+
+      if (!pcExisted && !sqPiece) allToMoves.push(sqId)
+
+      rangeMoves.push(sqId)
     }
-    rangeMoves.push(sqId)
   }
+
   // top
-  for (let i = rowNumber + 1; i <= 8; i++) {
-    const sqId = `${column}${i}`
-    const pieceExistingSq = allSquares.find(
-      (sq) => sq.id === sqId && sq.piece !== null
-    )
-    if (pieceExistingSq) {
-      if (pieceExistingSq.piece?.color !== square.piece?.color) {
-        allToMoves.push(sqId)
+  if (rowNumber < 8) {
+    let pcExisted = false
+    for (let i = rowNumber + 1; i <= 8; i++) {
+      const sqId = `${column}${i}`
+      const { piece: sqPiece } = squares.find((sq) => sq.id === sqId) as Square
+
+      if (!pcExisted && sqPiece) {
+        if (sqPiece.color !== playerPiece?.color) allToMoves.push(sqId)
+
+        pcExisted = true
       }
-    } else {
-      allToMoves.push(sqId)
+
+      if (!pcExisted && !sqPiece) allToMoves.push(sqId)
+
+      rangeMoves.push(sqId)
     }
-    rangeMoves.push(sqId)
   }
+
   // bottom
-  for (let i = rowNumber - 1; i >= 1; i--) {
-    const sqId = `${column}${i}`
-    const pieceExistingSq = allSquares.find(
-      (sq) => sq.id === sqId && sq.piece !== null
-    )
-    if (pieceExistingSq) {
-      if (pieceExistingSq.piece?.color !== square.piece?.color) {
-        allToMoves.push(sqId)
+  if (rowNumber > 1) {
+    let pcExisted = false
+    for (let i = rowNumber - 1; i >= 1; i--) {
+      const sqId = `${column}${i}`
+      const { piece: sqPiece } = squares.find((sq) => sq.id === sqId) as Square
+
+      if (!pcExisted && sqPiece) {
+        if (sqPiece.color !== playerPiece?.color) allToMoves.push(sqId)
+
+        pcExisted = true
       }
-    } else {
-      allToMoves.push(sqId)
+
+      if (!pcExisted && !sqPiece) allToMoves.push(sqId)
+
+      rangeMoves.push(sqId)
     }
-    rangeMoves.push(sqId)
   }
 
   return { allToMoves, rangeMoves }
