@@ -15,18 +15,23 @@ const setDefaultSquare = (piece: string, color: PieceColor, number: number) => {
 
 const whiteOrBlackPieces = (color: PieceColor) => {
   const otherPieces = ["rook", "knight", "bishop", "pawn"]
+
   const allPieces: Piece[] = [
     {
       name: "king",
       number: 1,
       color,
       default_square: color === "white" ? "e1" : "e8",
+      toMoves: [],
+      range_moves: [],
     },
     {
       name: "queen",
       number: 1,
       color,
       default_square: color === "white" ? "d1" : "d8",
+      toMoves: [],
+      range_moves: [],
     },
   ]
 
@@ -38,6 +43,8 @@ const whiteOrBlackPieces = (color: PieceColor) => {
         number: i,
         color,
         default_square: setDefaultSquare(piece, color, i),
+        toMoves: [],
+        range_moves: [],
       })
     }
   })
@@ -74,63 +81,39 @@ const generateSquares = () => {
   return squares
 }
 
-const selectDeselectToMoves = (
-  sqIndex: number,
-  squares: Square[],
-  selectOrDeselect: boolean
-) => {
-  const updatedSqs = [...squares]
-  const pieceMoves = getSquareMoves(updatedSqs[sqIndex])
-  // console.log("pieceMoves ", pieceMoves)
-
-  updatedSqs[sqIndex].isSelected = selectOrDeselect
-  pieceMoves.forEach((move: string) => {
-    const index = updatedSqs.findIndex((sq: Square) => sq.id === move)
-    updatedSqs[index].isToMove = selectOrDeselect
-  })
-
-  return updatedSqs
-}
-
 const selectDeselectSquares = (squares: Square[], squareId: string) => {
-  let updatedSquares: Square[] = squares
-  const prevSelectedIndex = squares.findIndex((sq: Square) => sq.isSelected)
-  const selectingSquareIndex = squares.findIndex(
-    (sq: Square) => sq.id === squareId
-  )
+  let updatedSquares = squares
+  const prevSelectedIndex = updatedSquares.findIndex((sq) => sq.isSelected)
+  const selectingSqIndex = updatedSquares.findIndex((sq) => sq.id === squareId)
 
-  if (prevSelectedIndex === selectingSquareIndex) {
-    updatedSquares = selectDeselectToMoves(
-      prevSelectedIndex,
-      updatedSquares,
-      false
-    )
+  if (prevSelectedIndex === -1) {
+    updatedSquares = update_ToMoves(updatedSquares, selectingSqIndex, true)
   } else {
-    if (prevSelectedIndex !== -1) {
-      updatedSquares = selectDeselectToMoves(
-        prevSelectedIndex,
-        updatedSquares,
-        false
-      )
-      updatedSquares = selectDeselectToMoves(
-        selectingSquareIndex,
-        updatedSquares,
-        true
-      )
+    if (prevSelectedIndex !== selectingSqIndex) {
+      updatedSquares = update_ToMoves(updatedSquares, prevSelectedIndex, false)
+      updatedSquares = update_ToMoves(updatedSquares, selectingSqIndex, true)
     } else {
-      updatedSquares = selectDeselectToMoves(
-        selectingSquareIndex,
-        updatedSquares,
-        true
-      )
+      updatedSquares = update_ToMoves(updatedSquares, prevSelectedIndex, false)
     }
   }
 
   return updatedSquares
 }
 
-const getSquareMoves = (square: Square) => {
-  const { name, color } = square.piece!
+function update_ToMoves(squares: Square[], sqIndex: number, selDel: boolean) {
+  const updatedSquares = squares
+  const toMoves = updatedSquares[sqIndex].piece!.toMoves
+  updatedSquares[sqIndex].isSelected = selDel
+  toMoves.forEach((move) => {
+    const index = updatedSquares.findIndex((sq) => sq.id === move)
+    updatedSquares[index].isToMove = selDel
+  })
+
+  return updatedSquares
+}
+
+const getSquareMoves = (square: Square, squares: Square[]) => {
+  const { name } = square.piece!
   const {
     rookMoves,
     knightMoves,
@@ -142,19 +125,19 @@ const getSquareMoves = (square: Square) => {
 
   switch (name) {
     case "pawn":
-      return pawnMoves(square, color)
+      return pawnMoves(square.id, squares!)
     case "rook":
-      return rookMoves(square)
+      return rookMoves(square.id, squares!)
     case "knight":
-      return knightMoves(square)
+      return knightMoves(square.id, squares!)
     case "bishop":
-      return bishopMoves(square)
+      return bishopMoves(square.id, squares!)
     case "queen":
-      return queenMoves(square)
+      return queenMoves(square.id, squares!)
     case "king":
-      return kingMoves(square)
+      return kingMoves(square.id, squares!)
     default:
-      return []
+      return null
   }
 }
 

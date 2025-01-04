@@ -1,2 +1,4 @@
 [-] incrementMoves doesn't seem to be needed.
-[-] PlayGroundStore - I supposed movingSqIndex will not be -1
+[-] PlayGroundStore - I supposed movingSqIndex will not be -1.
+[-] 🔴 getSquareMoves needs movingSqIndex instead of square object in the first parameter - don't know if it's true for everywhere getSquareMoves is called.
+[-] 🔴 maybe we can return all the updated squares

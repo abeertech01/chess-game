@@ -2,19 +2,15 @@ import { COLUMNS } from "@/constants/chess-board"
 import { usePlayGroundStore } from "@/store/playGroundStore"
 import { Square } from "@/utility/types"
 
-const getSquares = () => {
-  const squares = usePlayGroundStore.getState().squares
-  return squares
-}
-
-export default (square: Square) => {
-  const { id } = square
-  const [column, row] = id.split("")
+export default (squareId: string, squares: Square[]) => {
+  const [column, row] = squareId.split("")
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
-  const squares = getSquares()
+  const allSquares = squares
+  const square = allSquares.find((sq) => sq.id === squareId) as Square
 
-  const allMoves: string[] = []
+  const allToMoves: string[] = []
+  const rangeMoves = []
 
   // top left [column -, row +]
   if (columnIndex > 0 && rowNumber < 8) {
@@ -23,19 +19,17 @@ export default (square: Square) => {
       if (_row === 8) break
       _row = _row + 1
       const sqId = `${COLUMNS[i]}${_row}`
-      const pieceExistingSq = squares.find(
+      const pieceExistingSq = allSquares.find(
         (sq) => sq.id === sqId && sq.piece !== null
       )
       if (pieceExistingSq) {
         if (pieceExistingSq.piece?.color !== square.piece?.color) {
-          allMoves.push(sqId)
-          break
-        } else {
-          break
+          allToMoves.push(sqId)
         }
       } else {
-        allMoves.push(sqId)
+        allToMoves.push(sqId)
       }
+      rangeMoves.push(sqId)
     }
   }
 
@@ -46,19 +40,17 @@ export default (square: Square) => {
       if (_row === 8) break
       _row = _row + 1
       const sqId = `${COLUMNS[i]}${_row}`
-      const pieceExistingSq = squares.find(
+      const pieceExistingSq = allSquares.find(
         (sq) => sq.id === sqId && sq.piece !== null
       )
       if (pieceExistingSq) {
         if (pieceExistingSq.piece?.color !== square.piece?.color) {
-          allMoves.push(sqId)
-          break
-        } else {
-          break
+          allToMoves.push(sqId)
         }
       } else {
-        allMoves.push(sqId)
+        allToMoves.push(sqId)
       }
+      rangeMoves.push(sqId)
     }
   }
 
@@ -69,19 +61,17 @@ export default (square: Square) => {
       if (_row === 1) break
       _row = _row - 1
       const sqId = `${COLUMNS[i]}${_row}`
-      const pieceExistingSq = squares.find(
+      const pieceExistingSq = allSquares.find(
         (sq) => sq.id === sqId && sq.piece !== null
       )
       if (pieceExistingSq) {
         if (pieceExistingSq.piece?.color !== square.piece?.color) {
-          allMoves.push(sqId)
-          break
-        } else {
-          break
+          allToMoves.push(sqId)
         }
       } else {
-        allMoves.push(sqId)
+        allToMoves.push(sqId)
       }
+      rangeMoves.push(sqId)
     }
   }
 
@@ -92,21 +82,19 @@ export default (square: Square) => {
       if (_row === 1) break
       _row = _row - 1
       const sqId = `${COLUMNS[i]}${_row}`
-      const pieceExistingSq = squares.find(
+      const pieceExistingSq = allSquares.find(
         (sq) => sq.id === sqId && sq.piece !== null
       )
       if (pieceExistingSq) {
         if (pieceExistingSq.piece?.color !== square.piece?.color) {
-          allMoves.push(sqId)
-          break
-        } else {
-          break
+          allToMoves.push(sqId)
         }
       } else {
-        allMoves.push(sqId)
+        allToMoves.push(sqId)
       }
+      rangeMoves.push(sqId)
     }
   }
 
-  return allMoves
+  return { allToMoves, rangeMoves }
 }

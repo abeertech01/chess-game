@@ -1,51 +1,51 @@
 import { COLUMNS } from "@/constants/chess-board"
-import { PieceColor, Square } from "../types"
-import { usePlayGroundStore } from "@/store/playGroundStore"
+import { Square } from "../types"
 
-const getSquares = () => {
-  const squares = usePlayGroundStore.getState().squares
-  return squares
-}
-
-export default (square: Square, color: PieceColor) => {
-  const { id } = square
-  const [column, row] = id.split("")
+export default (squareId: string, squares: Square[]) => {
+  const [column, row] = squareId.split("")
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
 
-  const allMoves = []
+  const allToMoves = []
+  let rangeMoves: string[] = []
 
-  const squares = getSquares()
+  const allSquares = squares
+  const square = allSquares.find((sq) => sq.id === squareId)
+  const color = square?.piece?.color
 
   if (color === "white") {
     // top
     if (rowNumber === 2) {
       const sqId1 = `${COLUMNS[columnIndex]}${rowNumber + 1}`
       const sqId2 = `${COLUMNS[columnIndex]}${rowNumber + 2}`
-      const recordSq1 = squares.find((sq) => sq.id === sqId1)
-      const recordSq2 = squares.find((sq) => sq.id === sqId2)
-      if (recordSq1?.piece === null) allMoves.push(sqId1)
-      if (recordSq1?.piece === null && recordSq2?.piece === null)
-        allMoves.push(sqId2)
+      const recordSq1 = allSquares.find((sq) => sq.id === sqId1) as Square
+      const recordSq2 = allSquares.find((sq) => sq.id === sqId2) as Square
+      if (recordSq1.piece === null) allToMoves.push(sqId1)
+      if (recordSq1.piece === null && recordSq2.piece === null)
+        allToMoves.push(sqId2)
+      rangeMoves = [...rangeMoves, sqId1, sqId2]
     } else {
       const sqId = `${COLUMNS[columnIndex]}${rowNumber + 1}`
-      const recordSq = squares.find((sq) => sq.id === sqId)
-      if (recordSq?.piece === null) allMoves.push(sqId)
+      const recordSq = allSquares.find((sq) => sq.id === sqId)
+      if (recordSq && recordSq.piece === null) allToMoves.push(sqId)
+      rangeMoves.push(sqId)
     }
     // top left
     if (columnIndex > 0 && rowNumber < 8) {
       const squareId = `${COLUMNS[columnIndex - 1]}${rowNumber + 1}`
-      const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece?.color === "black") {
-        allMoves.push(squareId)
+      const sqRecord = allSquares.find((sq) => sq.id === squareId) as Square
+      if (sqRecord.piece && sqRecord.piece.color === "black") {
+        allToMoves.push(squareId)
+        rangeMoves.push(squareId)
       }
     }
     // top right
     if (columnIndex < 7 && rowNumber < 8) {
       const squareId = `${COLUMNS[columnIndex + 1]}${rowNumber + 1}`
-      const sqRecord = squares.find((sq) => sq.id === squareId)
-      if (sqRecord?.piece?.color === "black") {
-        allMoves.push(squareId)
+      const sqRecord = allSquares.find((sq) => sq.id === squareId) as Square
+      if (sqRecord.piece && sqRecord.piece.color === "black") {
+        allToMoves.push(squareId)
+        rangeMoves.push(squareId)
       }
     }
   } else {
@@ -53,33 +53,39 @@ export default (square: Square, color: PieceColor) => {
     if (rowNumber === 7) {
       const sqId1 = `${COLUMNS[columnIndex]}${rowNumber - 1}`
       const sqId2 = `${COLUMNS[columnIndex]}${rowNumber - 2}`
-      const recordSq1 = squares.find((sq) => sq.id === sqId1)
-      const recordSq2 = squares.find((sq) => sq.id === sqId2)
-      if (recordSq1?.piece === null) allMoves.push(sqId1)
+      const recordSq1 = allSquares.find((sq) => sq.id === sqId1)
+      const recordSq2 = allSquares.find((sq) => sq.id === sqId2)
+      if (recordSq1?.piece === null) allToMoves.push(sqId1)
       if (recordSq1?.piece === null && recordSq2?.piece === null)
-        allMoves.push(sqId2)
+        allToMoves.push(sqId2)
+      rangeMoves = [...rangeMoves, sqId1, sqId2]
     } else {
       const sqId = `${COLUMNS[columnIndex]}${rowNumber - 1}`
-      const recordSq = squares.find((sq) => sq.id === sqId)
-      if (recordSq?.piece === null) allMoves.push(sqId)
+      const recordSq = allSquares.find((sq) => sq.id === sqId)
+      if (recordSq?.piece === null) allToMoves.push(sqId)
+      rangeMoves.push(sqId)
     }
     // bottom left
     if (columnIndex > 0 && rowNumber > 1) {
       const squareId = `${COLUMNS[columnIndex - 1]}${rowNumber - 1}`
-      const sqRecord = squares.find((sq) => sq.id === squareId)
+      const sqRecord = allSquares.find((sq) => sq.id === squareId)
       if (sqRecord?.piece?.color === "white") {
-        allMoves.push(squareId)
+        allToMoves.push(squareId)
+        rangeMoves.push(squareId)
       }
     }
-    // top right
+    // bottom right
     if (columnIndex < 7 && rowNumber > 1) {
       const squareId = `${COLUMNS[columnIndex + 1]}${rowNumber - 1}`
-      const sqRecord = squares.find((sq) => sq.id === squareId)
+      const sqRecord = allSquares.find((sq) => sq.id === squareId)
       if (sqRecord?.piece?.color === "white") {
-        allMoves.push(squareId)
+        allToMoves.push(squareId)
+        rangeMoves.push(squareId)
       }
     }
   }
 
-  return allMoves
+  // console.log({ allToMoves, rangeMoves })
+
+  return { allToMoves, rangeMoves }
 }

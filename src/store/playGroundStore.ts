@@ -55,12 +55,32 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       return { squares: updatedSquares }
     }),
   setSquares: () =>
-    set((state) => {
-      const generatedSquares = generateSquares()
+    set(() => {
+      let generatedSquares: Square[] = generateSquares()
 
-      const kings = generatedSquares.map((sq) => {
-        if (sq.piece && sq.piece.name === "king") return sq
+      generatedSquares = generatedSquares.map((sq: Square) => {
+        if (sq.piece) {
+          const allMoves: {
+            allToMoves: string[]
+            rangeMoves: string[]
+          } | null = getSquareMoves(sq, generatedSquares)
+
+          return {
+            ...sq,
+            piece: {
+              ...sq.piece,
+              toMoves: allMoves!.allToMoves,
+              range_moves: allMoves!.rangeMoves,
+            },
+          }
+        } else {
+          return sq
+        }
       })
+
+      // const kings = generatedSquares.map((sq) => {
+      //   if (sq.piece && sq.piece.name === "king") return sq
+      // })
 
       // const kingsInfo = {} as KingsInfo
       // kings.forEach((king) => {
@@ -92,29 +112,60 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
     }),
   movePiece: (squareId) =>
     set((state) => {
-      let thePiece = null
-      const updatedSquares = [...state.squares]
+      // thePiece is a mutable variable ✅
+      let thePiece: Piece | null = null
+      let updatedSquares = [...state.squares]
+      // get the selected square index (from) ✅
       const fromSqIndex = updatedSquares.findIndex(
         (square) => square.isSelected === true
       )
-      if (fromSqIndex !== -1) thePiece = updatedSquares[fromSqIndex].piece
+      // save the piece of selected square index in the thePiece variable ✅
+      thePiece = updatedSquares[fromSqIndex].piece
 
-      if (thePiece !== null) updatedSquares[fromSqIndex].piece = null
+      // NOTE: need to deselect
+      // remove the piece from the selected square index ✅
+      updatedSquares[fromSqIndex].piece = null
 
+      // get the moving square's index ✅
       const movingSqIndex = updatedSquares.findIndex(
         (square) => square.id === squareId
       )
 
+      // get a mutable variable for saving captured piece ✅
       let capturedPiece: Piece | null = null
       // I suppose movingSqIndex is not -1
-      if (updatedSquares[movingSqIndex].piece) {
+      // if the moving index square has a piece of different color, save it to capturedPrice. ✅
+      if (
+        updatedSquares[movingSqIndex].piece &&
+        updatedSquares[movingSqIndex].piece.color !== thePiece!.color
+      ) {
         capturedPiece = updatedSquares[movingSqIndex].piece
-        updatedSquares[movingSqIndex].piece = thePiece
-      } else {
         updatedSquares[movingSqIndex].piece = thePiece
       }
 
-      const deselectedAllSquares = deselectAllSquares(updatedSquares)
+      if (!updatedSquares[movingSqIndex].piece) {
+        updatedSquares[movingSqIndex].piece = thePiece
+      }
+
+      // deselect isSelected and isToMove ✅
+      updatedSquares = deselectAllSquares(updatedSquares)
+
+      // get all Moves for the new square index ✅
+      const allMoves = getSquareMoves(
+        updatedSquares[movingSqIndex],
+        updatedSquares
+      )
+
+      // prepare a piece with updated toMoves and range_moves ✅
+      const preparedPiece: Piece = {
+        ...updatedSquares[movingSqIndex].piece!,
+        toMoves: allMoves!.allToMoves,
+        range_moves: allMoves!.rangeMoves,
+      }
+
+      // update moving index square's piece by the prepared piece. ✅
+      updatedSquares[movingSqIndex].piece = preparedPiece
+      console.log(updatedSquares[movingSqIndex].piece)
 
       let changedPlayer = state.toMovePlayer
       if (state.toMovePlayer === "white") {
@@ -124,7 +175,7 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       }
 
       return {
-        squares: deselectedAllSquares,
+        squares: updatedSquares,
         totalMoves: state.totalMoves + 1,
         toMovePlayer: changedPlayer,
         capturedPieces: capturedPiece

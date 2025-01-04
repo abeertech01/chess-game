@@ -26,6 +26,8 @@ export interface Piece {
   number: number
   color: PieceColor
   default_square: string
+  toMoves: string[] // which squares piece can move
+  range_moves: string[] // which squares this piece normally move
 }
 
 // export interface KingRelatedSquares {
