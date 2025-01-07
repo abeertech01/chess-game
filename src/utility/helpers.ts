@@ -82,29 +82,32 @@ const generateSquares = () => {
 }
 
 const selectDeselectSquares = (squares: Square[], squareId: string) => {
-  let updatedSquares = squares
+  let updatedSquares = structuredClone(squares)
+  let isAnySqSelected = false
   const prevSelectedIndex = updatedSquares.findIndex((sq) => sq.isSelected)
   const selectingSqIndex = updatedSquares.findIndex((sq) => sq.id === squareId)
 
   if (prevSelectedIndex === -1) {
     updatedSquares = update_ToMoves(updatedSquares, selectingSqIndex, true)
+    isAnySqSelected = true
   } else {
     if (prevSelectedIndex !== selectingSqIndex) {
       updatedSquares = update_ToMoves(updatedSquares, prevSelectedIndex, false)
       updatedSquares = update_ToMoves(updatedSquares, selectingSqIndex, true)
+      isAnySqSelected = true
     } else {
       updatedSquares = update_ToMoves(updatedSquares, prevSelectedIndex, false)
+      isAnySqSelected = false
     }
   }
 
-  return updatedSquares
+  return { updatedSquares, isAnySqSelected }
 }
 
 function update_ToMoves(squares: Square[], sqIndex: number, selDel: boolean) {
-  const updatedSquares = squares
-  const toMoves = updatedSquares[sqIndex].piece!.toMoves
+  const updatedSquares = structuredClone(squares)
   updatedSquares[sqIndex].isSelected = selDel
-  toMoves.forEach((move) => {
+  updatedSquares[sqIndex].piece!.toMoves.forEach((move) => {
     const index = updatedSquares.findIndex((sq) => sq.id === move)
     updatedSquares[index].isToMove = selDel
   })
@@ -112,8 +115,10 @@ function update_ToMoves(squares: Square[], sqIndex: number, selDel: boolean) {
   return updatedSquares
 }
 
-const getSquareMoves = (square: Square, squares: Square[]) => {
-  const { name } = square.piece!
+const getSquareMoves = (sqIndex: number, sqs: Square[]) => {
+  const squares = structuredClone(sqs)
+  const square = squares[sqIndex]
+  const { name } = squares[sqIndex].piece!
   const {
     rookMoves,
     knightMoves,
@@ -142,36 +147,46 @@ const getSquareMoves = (square: Square, squares: Square[]) => {
 }
 
 const deselectAllSquares = (squares: Square[]) => {
-  const updatedSquares = [...squares]
-
-  for (let i = 0; i < updatedSquares.length; i++) {
-    updatedSquares[i].isSelected = false
-    updatedSquares[i].isToMove = false
+  for (let i = 0; i < squares.length; i++) {
+    squares[i].isSelected = false
+    squares[i].isToMove = false
   }
-
-  return updatedSquares
 }
 
 const setSquareMoves = (squares: Square[]) => {
-  return squares.map((sq: Square) => {
+  let updatedSquares = structuredClone(squares)
+  console.log("updatedSquares top ", updatedSquares)
+  updatedSquares = updatedSquares.map((sq: Square, index: number) => {
     if (sq.piece) {
       const allMoves: {
         allToMoves: string[]
         rangeMoves: string[]
-      } | null = getSquareMoves(sq, squares)
+      } | null = getSquareMoves(index, squares)
 
-      return {
-        ...sq,
-        piece: {
-          ...sq.piece,
-          toMoves: allMoves!.allToMoves,
-          range_moves: allMoves!.rangeMoves,
-        },
+      const piece = {
+        ...sq.piece,
+        toMoves: allMoves!.allToMoves,
+        range_moves: allMoves!.rangeMoves,
       }
+
+      const changedSquare: Square = {
+        id: sq.id,
+        isSelected: sq.isSelected,
+        isToMove: sq.isToMove,
+        piece,
+      }
+
+      if (sq.id === "a2") console.log(changedSquare)
+
+      return changedSquare
     } else {
-      return sq
+      // Ensure even unchanged squares return a new object
+      return { ...sq }
     }
   })
+  // console.log("updatedSquares ", updatedSquares)
+
+  return updatedSquares
 }
 
 export {

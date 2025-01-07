@@ -6,14 +6,14 @@ import {
   PieceColor,
   Square as SquareObj,
 } from "@/utility/types"
-import { FC, useEffect, useState } from "react"
+import { FC, useEffect } from "react"
 import Piece from "@/app/(private)/playground/components/Piece"
 
 interface ComponentProps {
   squareObj: SquareObj
   i: number
   j: number
-  toggleSelectedSquare: () => void
+  // toggleSelectedSquare: () => void
   // kingRelatedSquares: KingRelatedSquares | null
 }
 
@@ -21,19 +21,16 @@ const Square: FC<ComponentProps> = ({
   squareObj,
   i,
   j,
-  toggleSelectedSquare,
+  // toggleSelectedSquare,
   // kingRelatedSquares,
 }) => {
   const selectASquare = usePlayGroundStore((state) => state.selectASquare)
   const movePiece = usePlayGroundStore((state) => state.movePiece)
   const toMovePlayer = usePlayGroundStore((state) => state.toMovePlayer)
-  const [opponentColor, setOpponentColor] = useState<PieceColor | null>(
-    squareObj.piece && (squareObj.piece.color === "white" ? "black" : "white")
-  )
 
-  // useEffect(()=> {
-
-  // }, [kingRelatedSquares])
+  useEffect(() => {
+    // console.log(squareObj)
+  }, [squareObj])
 
   const clickSquare = () => {
     if (
@@ -42,12 +39,12 @@ const Square: FC<ComponentProps> = ({
       !squareObj.isToMove
     ) {
       selectASquare(squareObj.id)
-      toggleSelectedSquare()
+      // toggleSelectedSquare()
     }
 
     if (squareObj.isToMove) {
       movePiece(squareObj.id)
-      toggleSelectedSquare()
+      // toggleSelectedSquare()
     }
   }
 
@@ -74,6 +71,7 @@ const Square: FC<ComponentProps> = ({
       //     : ""
       // }
     >
+      {/* {squareObj.isSelected ? "t " : "f "} */}
       <h1>{squareObj.piece ? null : squareObj.id}</h1>
       {squareObj.piece && (
         <Piece piece={squareObj.piece} className={"w-[3rem] h-[3rem]"} />

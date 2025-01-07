@@ -30,15 +30,8 @@ export interface Piece {
   range_moves: string[] // which squares this piece normally move
 }
 
-// export interface KingRelatedSquares {
-//   white: {
-//     king_moves: string[]
-//     king_square: Square
-//     king_checked: boolean
-//   }
-//   black: {
-//     king_moves: string[]
-//     king_square: Square
-//     king_checked: boolean
-//   }
-// }
+export interface Check {
+  checkedPlayer: PieceColor | null
+  isCheckThreat: boolean
+  checkMate: boolean
+}

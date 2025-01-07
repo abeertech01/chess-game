@@ -11,10 +11,15 @@ const PlayGround: FC<ComponentProps> = () => {
   const [rows, setRows] = useState<Row[]>([])
   const squares = usePlayGroundStore((state) => state.squares)
   const totalMoves = usePlayGroundStore((state) => state.totalMoves)
-  // const kingRelatedSquares = usePlayGroundStore(
-  //   (state) => state.kingRelatedSquares
-  // )
+
+  const someSquareSelected = usePlayGroundStore(
+    (state) => state.someSquareSelected
+  )
   const setSquares = usePlayGroundStore((state) => state.setSquares)
+
+  useEffect(() => {
+    getRowsSet(squares)
+  }, [someSquareSelected])
 
   useEffect(() => {
     if (totalMoves === 0) {
@@ -28,9 +33,9 @@ const PlayGround: FC<ComponentProps> = () => {
     }
   }, [squares, rows])
 
-  const toggleSelectedSquare = () => {
-    getRowsSet(squares)
-  }
+  // const toggleSelectedSquare = () => {
+  //   getRowsSet(squares)
+  // }
 
   const getRowsSet = (sqs: SquareObj[]) => {
     let arrangedRows: Row[] = []
@@ -60,12 +65,7 @@ const PlayGround: FC<ComponentProps> = () => {
                 squareObj={sq}
                 i={i}
                 j={j}
-                toggleSelectedSquare={toggleSelectedSquare}
-                // kingRelatedSquares={
-                //   sq.piece && sq.piece.name === "king"
-                //     ? kingRelatedSquares
-                //     : null
-                // }
+                // toggleSelectedSquare={toggleSelectedSquare}
               />
             ))}
           </div>

@@ -1,42 +1,56 @@
-// import { usePlayGroundStore } from "@/store/playGroundStore"
-// import { getSquareMoves } from "./helpers"
-// import { KingRelatedSquares, PieceColor, Square } from "./types"
+import { PieceColor, Square } from "./types"
 
-// const getKingRelatedSquares = () => {
-//   return usePlayGroundStore.getState().kingRelatedSquares
-// }
+export const checkIfOppChecked = (squares: Square[], player: PieceColor) => {
+  // take all the toMoves of opponent king
+  const playerToMoves = squares.flatMap((sq) => {
+    if (sq.piece && sq.piece.color === player) return sq.piece.toMoves
+  }) as string[]
 
-// const checkingKingMoves = (
-//   squares: Square[],
-//   movingSquareIndex: number
-// ): KingRelatedSquares | null => {
-//   // get moves from the moving square
-//   const movingSqMoves: string[] = getSquareMoves(squares[movingSquareIndex])
-//   const kingRelatedSquares = getKingRelatedSquares()
+  // get opponent king's index
+  const oppKingIndex = squares.findIndex(
+    (sq) => sq.piece && sq.piece.color !== player && sq.piece.name === "king"
+  )
 
-//   // For Player
+  const oppKingToMoves = squares[oppKingIndex].piece!.toMoves
+  const blockedMoves = oppKingToMoves.map((move) =>
+    playerToMoves.includes(move)
+  )
 
-//   // For Opponent
-//   const opponnentKingColor: PieceColor =
-//     squares[movingSquareIndex].piece?.color === "white" ? "black" : "white"
-//   const oppKingSqMoves = kingRelatedSquares[opponnentKingColor].king_moves
+  const isOppKingChecked = playerToMoves.includes(squares[oppKingIndex].id)
 
-//   const oppKingRestMoves = oppKingSqMoves.filter(
-//     (move) => !movingSqMoves.includes(move)
+  if (isOppKingChecked && blockedMoves.length === 0)
+    return { check_mate: true, opp_king_check: true }
+  else if (isOppKingChecked && blockedMoves.length > 0)
+    return { check_mate: false, opp_king_check: true }
+  else return { check_mate: false, opp_king_check: false }
+}
+
+export const checkIfPlayerChecked = (squares: Square[], player: PieceColor) => {
+  const playerKingIndex = squares.findIndex(
+    (sq) => sq.piece && sq.piece.color === player && sq.piece.name === "king"
+  )
+
+  const oppPiecesToMoves = squares.flatMap((sq) => {
+    if (sq.piece && sq.piece.color !== player) return sq.piece.toMoves
+  }) as string[]
+
+  if (oppPiecesToMoves.includes(squares[playerKingIndex].id)) return true
+  else return false
+}
+
+// // when player moves a piece, check if it removes the check.
+// export const ifCheckRemoved = (squares: Square[], player: PieceColor) => {
+//   // get player king index
+//   const playerKingIndex = squares.findIndex(
+//     (sq) => sq.piece && sq.piece.color === player && sq.piece.name === "king"
 //   )
 
-//   const isOppKingChecked = movingSqMoves.some(
-//     (move) => move === kingRelatedSquares[opponnentKingColor].king_square.id
-//   )
-//   if (isOppKingChecked)
-//     kingRelatedSquares[opponnentKingColor].king_checked = true
+//   // get all the toMoves of opponent pieces
+//   const oppPiecesToMoves = squares.flatMap((sq) => {
+//     if (sq.piece && sq.piece.color !== player) return sq.piece.toMoves
+//   }) as string[]
 
-//   if (oppKingRestMoves.length !== 0) {
-//     kingRelatedSquares[opponnentKingColor].king_moves = oppKingRestMoves
-//     return kingRelatedSquares
-//   } else {
-//     return null
-//   }
+//   // check if any playerKingIndex's square id exists in oppPiecesToMoves
+//   if (oppPiecesToMoves.includes(squares[playerKingIndex].id)) return false
+//   else return true
 // }
-
-// export { checkingKingMoves }
