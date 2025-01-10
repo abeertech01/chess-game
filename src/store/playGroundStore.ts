@@ -7,23 +7,11 @@ import {
 import { Piece, PieceColor, Square } from "@/utility/types"
 import { create } from "zustand"
 
-// type KingsInfo = {
-//   white: {
-//     king: Square
-//     moves: string[]
-//   }
-//   black: {
-//     king: Square
-//     moves: string[]
-//   }
-// }
-
 type PlayGroundStore = {
   squares: Square[]
   totalMoves: number
   toMovePlayer: PieceColor
   capturedPieces: Piece[]
-  // kingRelatedSquares: KingRelatedSquares
   incrementMoves: () => void
   selectASquare: (squareId: string) => void
   setSquares: () => void
@@ -35,59 +23,18 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
   totalMoves: 0,
   toMovePlayer: "white",
   capturedPieces: [],
-  // kingRelatedSquares: {
-  //   white: {
-  //     king_moves: [],
-  //     king_square: {} as Square,
-  //     king_checked: false,
-  //   },
-  //   black: {
-  //     king_moves: [],
-  //     king_square: {} as Square,
-  //     king_checked: false,
-  //   },
-  // },
   incrementMoves: () => set((state) => ({ totalMoves: state.totalMoves + 1 })),
   selectASquare: (squareId) =>
     set((state) => {
-      const updatedSquares = selectDeselectSquares(state.squares, squareId)
-
-      return { squares: updatedSquares }
+      // const updatedSquares = selectDeselectSquares(state.squares, squareId)
+      // return { squares: updatedSquares }
     }),
   setSquares: () =>
     set((state) => {
       const generatedSquares = generateSquares()
 
-      const kings = generatedSquares.map((sq) => {
-        if (sq.piece && sq.piece.name === "king") return sq
-      })
-
-      // const kingsInfo = {} as KingsInfo
-      // kings.forEach((king) => {
-      //   if (king?.piece?.color === "white") {
-      //     const moves = getSquareMoves(king)
-      //     kingsInfo.white = { king, moves }
-      //   }
-      //   if (king?.piece?.color === "black") {
-      //     const moves = getSquareMoves(king)
-      //     kingsInfo.black = { king, moves }
-      //   }
-      // })
-
       return {
         squares: generatedSquares,
-        // kingRelatedSquares: {
-        //   white: {
-        //     king_square: kingsInfo.white.king,
-        //     king_moves: kingsInfo.white.moves,
-        //     king_checked: false,
-        //   },
-        //   black: {
-        //     king_square: kingsInfo.black.king,
-        //     king_moves: kingsInfo.black.moves,
-        //     king_checked: false,
-        //   },
-        // },
       }
     }),
   movePiece: (squareId) =>

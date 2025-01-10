@@ -1,60 +1,11 @@
+import { Piece, PieceColor, Square } from "./types"
 import { COLUMNS, ROW_NUMBERS } from "@/constants/chess-board"
-import { Piece, PieceColor, Square } from "@/utility/types"
 import { pieceSetup } from "./initialPieceSetups"
 import * as pieceMoves from "./pieceMoves"
 
-const setDefaultSquare = (piece: string, color: PieceColor, number: number) => {
-  if (piece === "pawn" && color === "white") {
-    return `${COLUMNS[number - 1]}2`
-  } else if (piece === "pawn" && color === "black") {
-    return `${COLUMNS[number - 1]}7`
-  } else {
-    return pieceSetup(piece, color, number)
-  }
-}
-
-const whiteOrBlackPieces = (color: PieceColor) => {
-  const otherPieces = ["rook", "knight", "bishop", "pawn"]
-  const allPieces: Piece[] = [
-    {
-      name: "king",
-      number: 1,
-      color,
-      default_square: color === "white" ? "e1" : "e8",
-    },
-    {
-      name: "queen",
-      number: 1,
-      color,
-      default_square: color === "white" ? "d1" : "d8",
-    },
-  ]
-
-  otherPieces.forEach((piece) => {
-    const numOfPieces = piece === "pawn" ? 8 : 2
-    for (let i = 1; i <= numOfPieces; i++) {
-      allPieces.push({
-        name: piece,
-        number: i,
-        color,
-        default_square: setDefaultSquare(piece, color, i),
-      })
-    }
-  })
-
-  return allPieces
-}
-
-const generatePieces = () => {
-  const whitePieces = whiteOrBlackPieces("white")
-  const blackPieces = whiteOrBlackPieces("black")
-
-  return [...whitePieces, ...blackPieces]
-}
-
 const generateSquares = () => {
   const squares: Square[] = []
-  const allThePieces = generatePieces()
+  const allThePieces = whiteBlackPieces()
 
   for (let i = 1; i <= ROW_NUMBERS; i++) {
     for (let j = 0; j < COLUMNS.length; j++) {
@@ -74,63 +25,73 @@ const generateSquares = () => {
   return squares
 }
 
-const selectDeselectToMoves = (
-  sqIndex: number,
-  squares: Square[],
-  selectOrDeselect: boolean
-) => {
-  const updatedSqs = [...squares]
-  const pieceMoves = getSquareMoves(updatedSqs[sqIndex])
-  // console.log("pieceMoves ", pieceMoves)
+const whiteBlackPieces = () => {
+  const whitePieces: Piece[] = generatePieces("white")
+  const blackPieces: Piece[] = generatePieces("black")
 
-  updatedSqs[sqIndex].isSelected = selectOrDeselect
-  pieceMoves.forEach((move: string) => {
-    const index = updatedSqs.findIndex((sq: Square) => sq.id === move)
-    updatedSqs[index].isToMove = selectOrDeselect
+  return [...whitePieces, ...blackPieces]
+}
+
+const generatePieces = (color: PieceColor) => {
+  const otherPieces = ["rook", "knight", "bishop", "pawn"]
+  const allPieces: Piece[] = [
+    {
+      name: "king",
+      number: 1,
+      color,
+      default_square: color === "white" ? "e1" : "e8",
+      toMoves: [],
+      range_moves: [],
+    },
+    {
+      name: "queen",
+      number: 1,
+      color,
+      default_square: color === "white" ? "d1" : "d8",
+      toMoves: [],
+      range_moves: [],
+    },
+  ]
+
+  otherPieces.forEach((piece) => {
+    const numOfPieces = piece === "pawn" ? 8 : 2
+    for (let i = 1; i < numOfPieces; i++) {
+      allPieces.push({
+        name: piece,
+        number: i,
+        color,
+        default_square: setDefaultSquare(piece, color, i),
+        toMoves: [],
+        range_moves: [],
+      })
+    }
   })
 
-  return updatedSqs
+  return allPieces
+}
+
+const setDefaultSquare = (piece: string, color: PieceColor, number: number) => {
+  if (piece === "pawn" && color === "white") {
+    return `${COLUMNS[number - 1]}2`
+  } else if (piece === "pawn" && color === "black") {
+    return `${COLUMNS[number - 1]}7`
+  } else {
+    return pieceSetup(piece, color, number)
+  }
 }
 
 const selectDeselectSquares = (squares: Square[], squareId: string) => {
-  let updatedSquares: Square[] = squares
-  const prevSelectedIndex = squares.findIndex((sq: Square) => sq.isSelected)
-  const selectingSquareIndex = squares.findIndex(
-    (sq: Square) => sq.id === squareId
-  )
+  const prevSelectedIndex = squares.findIndex((sq) => sq.isSelected)
+  const selectingSquareIndex = squares.findIndex((sq) => sq.id === squareId)
 
   if (prevSelectedIndex === selectingSquareIndex) {
-    updatedSquares = selectDeselectToMoves(
-      prevSelectedIndex,
-      updatedSquares,
-      false
-    )
-  } else {
-    if (prevSelectedIndex !== -1) {
-      updatedSquares = selectDeselectToMoves(
-        prevSelectedIndex,
-        updatedSquares,
-        false
-      )
-      updatedSquares = selectDeselectToMoves(
-        selectingSquareIndex,
-        updatedSquares,
-        true
-      )
-    } else {
-      updatedSquares = selectDeselectToMoves(
-        selectingSquareIndex,
-        updatedSquares,
-        true
-      )
-    }
+    squares[prevSelectedIndex].isSelected = false
   }
-
-  return updatedSquares
 }
 
-const getSquareMoves = (square: Square) => {
-  const { name, color } = square.piece!
+const getSquareMoves = (squareId: string, squares: Square[]) => {
+  const square = squares.find((sq: Square) => sq.id === squareId)
+  const { name, color } = square!.piece!
   const {
     rookMoves,
     knightMoves,
@@ -142,36 +103,20 @@ const getSquareMoves = (square: Square) => {
 
   switch (name) {
     case "pawn":
-      return pawnMoves(square, color)
+      return pawnMoves(squareId, squares, color)
     case "rook":
-      return rookMoves(square)
+      return rookMoves(squareId, squares)
     case "knight":
-      return knightMoves(square)
+      return knightMoves(squareId, squares)
     case "bishop":
-      return bishopMoves(square)
+      return bishopMoves(squareId, squares)
     case "queen":
-      return queenMoves(square)
+      return queenMoves(squareId, squares)
     case "king":
-      return kingMoves(square)
+      return kingMoves(squareId, squares)
     default:
       return []
   }
 }
 
-const deselectAllSquares = (squares: Square[]) => {
-  const updatedSquares = [...squares]
-
-  for (let i = 0; i < updatedSquares.length; i++) {
-    updatedSquares[i].isSelected = false
-    updatedSquares[i].isToMove = false
-  }
-
-  return updatedSquares
-}
-
-export {
-  generateSquares,
-  selectDeselectSquares,
-  getSquareMoves,
-  deselectAllSquares,
-}
+export { generateSquares }

@@ -1,19 +1,14 @@
-"use client"
-
-import { FC, useEffect, useState } from "react"
-import Square from "@/app/(private)/playground/components/Square"
 import { usePlayGroundStore } from "@/store/playGroundStore"
 import { Row, Square as SquareObj } from "@/utility/types"
+import { FC, useEffect, useState } from "react"
+import Square from "./components/Square"
 
 interface ComponentProps {}
 
-const PlayGround: FC<ComponentProps> = () => {
+const Playground: FC<ComponentProps> = () => {
   const [rows, setRows] = useState<Row[]>([])
-  const squares = usePlayGroundStore((state) => state.squares)
   const totalMoves = usePlayGroundStore((state) => state.totalMoves)
-  // const kingRelatedSquares = usePlayGroundStore(
-  //   (state) => state.kingRelatedSquares
-  // )
+  const squares = usePlayGroundStore((state) => state.squares)
   const setSquares = usePlayGroundStore((state) => state.setSquares)
 
   useEffect(() => {
@@ -26,11 +21,7 @@ const PlayGround: FC<ComponentProps> = () => {
     if (squares && squares.length === 64 && rows.length !== 8) {
       getRowsSet(squares)
     }
-  }, [squares, rows])
-
-  const toggleSelectedSquare = () => {
-    getRowsSet(squares)
-  }
+  }, [squares])
 
   const getRowsSet = (sqs: SquareObj[]) => {
     let arrangedRows: Row[] = []
@@ -55,18 +46,7 @@ const PlayGround: FC<ComponentProps> = () => {
         rows.map(({ squares: sqs }, i) => (
           <div className="row flex" key={i}>
             {sqs.map((sq: SquareObj, j: number) => (
-              <Square
-                key={j}
-                squareObj={sq}
-                i={i}
-                j={j}
-                toggleSelectedSquare={toggleSelectedSquare}
-                // kingRelatedSquares={
-                //   sq.piece && sq.piece.name === "king"
-                //     ? kingRelatedSquares
-                //     : null
-                // }
-              />
+              <Square key={i} squareObj={sq} i={i} j={j} />
             ))}
           </div>
         ))}
@@ -74,4 +54,4 @@ const PlayGround: FC<ComponentProps> = () => {
   )
 }
 
-export default PlayGround
+export default Playground

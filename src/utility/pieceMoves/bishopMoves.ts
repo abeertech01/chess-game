@@ -1,18 +1,11 @@
 import { COLUMNS } from "@/constants/chess-board"
 import { usePlayGroundStore } from "@/store/playGroundStore"
-import { Square } from "@/utility/types"
+import { PieceColor, Square } from "@/utility/types"
 
-const getSquares = () => {
-  const squares = usePlayGroundStore.getState().squares
-  return squares
-}
-
-export default (square: Square) => {
-  const { id } = square
-  const [column, row] = id.split("")
+export default (squareId: string, squares: Square[]) => {
+  const [column, row] = squareId.split("")
   const columnIndex = COLUMNS.indexOf(column)
   const rowNumber = parseInt(row)
-  const squares = getSquares()
 
   const allMoves: string[] = []
 
