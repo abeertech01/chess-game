@@ -55,7 +55,7 @@ const generatePieces = (color: PieceColor) => {
 
   otherPieces.forEach((piece) => {
     const numOfPieces = piece === "pawn" ? 8 : 2
-    for (let i = 1; i < numOfPieces; i++) {
+    for (let i = 1; i <= numOfPieces; i++) {
       allPieces.push({
         name: piece,
         number: i,
@@ -81,17 +81,49 @@ const setDefaultSquare = (piece: string, color: PieceColor, number: number) => {
 }
 
 const selectDeselectSquares = (squares: Square[], squareId: string) => {
-  const prevSelectedIndex = squares.findIndex((sq) => sq.isSelected)
-  const selectingSquareIndex = squares.findIndex((sq) => sq.id === squareId)
+  let updatedSquares = squares
+  const prevSelectedIndex = updatedSquares.findIndex((sq) => sq.isSelected)
+  const selectingSquareIndex = updatedSquares.findIndex(
+    (sq) => sq.id === squareId
+  )
 
-  if (prevSelectedIndex === selectingSquareIndex) {
-    squares[prevSelectedIndex].isSelected = false
+  if (prevSelectedIndex === -1) {
+    selDelToMoves(selectingSquareIndex, updatedSquares, true)
+  } else {
+    if (prevSelectedIndex !== selectingSquareIndex) {
+      selDelToMoves(prevSelectedIndex, updatedSquares, false)
+      selDelToMoves(selectingSquareIndex, updatedSquares, true)
+    } else {
+      selDelToMoves(prevSelectedIndex, updatedSquares, false)
+    }
   }
+
+  return [...updatedSquares]
+}
+
+const selDelToMoves = (
+  sqIndex: number,
+  squares: Square[],
+  selOrDel: boolean
+) => {
+  const pieceMoves = getSquareMoves(squares[sqIndex].id, squares)
+
+  squares[sqIndex] = {
+    ...squares[sqIndex],
+    isSelected: selOrDel,
+  }
+  pieceMoves?.allToMoves.forEach((move) => {
+    const index = squares.findIndex((sq: Square) => sq.id === move)
+    squares[index] = {
+      ...squares[index],
+      isToMove: selOrDel,
+    }
+  })
 }
 
 const getSquareMoves = (squareId: string, squares: Square[]) => {
   const square = squares.find((sq: Square) => sq.id === squareId)
-  const { name, color } = square!.piece!
+  const { name } = square!.piece!
   const {
     rookMoves,
     knightMoves,
@@ -103,7 +135,7 @@ const getSquareMoves = (squareId: string, squares: Square[]) => {
 
   switch (name) {
     case "pawn":
-      return pawnMoves(squareId, squares, color)
+      return pawnMoves(squareId, squares)
     case "rook":
       return rookMoves(squareId, squares)
     case "knight":
@@ -115,8 +147,63 @@ const getSquareMoves = (squareId: string, squares: Square[]) => {
     case "king":
       return kingMoves(squareId, squares)
     default:
-      return []
+      return null
   }
 }
 
-export { generateSquares }
+const setSquareMoves = (squares: Square[]) => {
+  let updatedSquares = squares.map((sq: Square, index: number) => {
+    if (sq.piece) {
+      const allMoves: {
+        allToMoves: string[]
+        rangeMoves: string[]
+      } | null = getSquareMoves(sq.id, squares)
+
+      return {
+        ...sq,
+        piece: {
+          ...sq.piece,
+          toMoves: allMoves ? allMoves.allToMoves : [],
+          range_moves: allMoves ? allMoves.rangeMoves : [],
+        },
+      }
+    } else {
+      return { ...sq }
+    }
+  })
+
+  return updatedSquares
+}
+
+const deselectAllSquares = (squares: Square[]) => {
+  for (let i = 0; i < squares.length; i++) {
+    squares[i].isSelected = false
+    squares[i].isToMove = false
+
+    if (squares[i].isSelected) {
+      const newSq = {
+        ...squares[i],
+        isSelected: false,
+      }
+
+      squares[i] = newSq
+    }
+
+    if (squares[i].isToMove) {
+      const newSq = {
+        ...squares[i],
+        isToMove: false,
+      }
+
+      squares[i] = newSq
+    }
+  }
+}
+
+export {
+  generateSquares,
+  getSquareMoves,
+  setSquareMoves,
+  selectDeselectSquares,
+  deselectAllSquares,
+}

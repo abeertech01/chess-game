@@ -10,11 +10,18 @@ interface ComponentProps {
   squareObj: SquareObj
   i: number
   j: number
+  toggleSelectedSquare: () => void
 }
 
-const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
+const Square: FC<ComponentProps> = ({
+  squareObj,
+  i,
+  j,
+  toggleSelectedSquare,
+}) => {
   const toMovePlayer = usePlayGroundStore((state) => state.toMovePlayer)
   const selectASquare = usePlayGroundStore((state) => state.selectASquare)
+  const movePiece = usePlayGroundStore((state) => state.movePiece)
 
   const clickSquare = () => {
     if (
@@ -23,6 +30,12 @@ const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
       !squareObj.isToMove
     ) {
       selectASquare(squareObj.id)
+      // toggleSelectedSquare()
+    }
+
+    if (squareObj.isToMove) {
+      movePiece(squareObj.id)
+      // toggleSelectedSquare()
     }
   }
 
@@ -46,7 +59,7 @@ const Square: FC<ComponentProps> = ({ squareObj, i, j }) => {
         <Piece piece={squareObj.piece} className={"w-[3rem] h-[3rem]"} />
       )}
       <small className="absolute bottom-1 right-1">
-        {squareObj.piece ? null : squareObj.id}
+        {squareObj && squareObj.id}
       </small>
     </div>
   )

@@ -1,3 +1,5 @@
+"use client"
+
 import { usePlayGroundStore } from "@/store/playGroundStore"
 import { Row, Square as SquareObj } from "@/utility/types"
 import { FC, useEffect, useState } from "react"
@@ -21,7 +23,15 @@ const Playground: FC<ComponentProps> = () => {
     if (squares && squares.length === 64 && rows.length !== 8) {
       getRowsSet(squares)
     }
+
+    if (squares && squares.length === 64 && rows.length === 8) {
+      getRowsSet(squares)
+    }
   }, [squares])
+
+  const toggleSelectedSquare = () => {
+    getRowsSet(squares)
+  }
 
   const getRowsSet = (sqs: SquareObj[]) => {
     let arrangedRows: Row[] = []
@@ -46,7 +56,13 @@ const Playground: FC<ComponentProps> = () => {
         rows.map(({ squares: sqs }, i) => (
           <div className="row flex" key={i}>
             {sqs.map((sq: SquareObj, j: number) => (
-              <Square key={i} squareObj={sq} i={i} j={j} />
+              <Square
+                key={j}
+                squareObj={sq}
+                i={i}
+                j={j}
+                toggleSelectedSquare={toggleSelectedSquare}
+              />
             ))}
           </div>
         ))}

@@ -1,10 +1,10 @@
 import {
-  deselectAllSquares,
   generateSquares,
-  getSquareMoves,
   selectDeselectSquares,
+  setSquareMoves,
 } from "@/utility/helpers"
-import { Piece, PieceColor, Square } from "@/utility/types"
+import { pieceMover } from "@/utility/movingPiece"
+import { Check, Piece, PieceColor, Square } from "@/utility/types"
 import { create } from "zustand"
 
 type PlayGroundStore = {
@@ -12,6 +12,7 @@ type PlayGroundStore = {
   totalMoves: number
   toMovePlayer: PieceColor
   capturedPieces: Piece[]
+  check: Check
   incrementMoves: () => void
   selectASquare: (squareId: string) => void
   setSquares: () => void
@@ -23,45 +24,50 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
   totalMoves: 0,
   toMovePlayer: "white",
   capturedPieces: [],
+  check: {
+    checkedPlayer: null,
+    isPlayerCheckThreat: false,
+    checkMate: false,
+  },
   incrementMoves: () => set((state) => ({ totalMoves: state.totalMoves + 1 })),
   selectASquare: (squareId) =>
     set((state) => {
-      // const updatedSquares = selectDeselectSquares(state.squares, squareId)
-      // return { squares: updatedSquares }
+      const updatedSquares = selectDeselectSquares(state.squares, squareId)
+
+      return { squares: updatedSquares }
     }),
   setSquares: () =>
     set((state) => {
       const generatedSquares = generateSquares()
 
+      const setSquares = setSquareMoves(generatedSquares)
+
       return {
-        squares: generatedSquares,
+        squares: setSquares,
       }
     }),
   movePiece: (squareId) =>
     set((state) => {
-      let thePiece = null
-      const updatedSquares = [...state.squares]
-      const fromSqIndex = updatedSquares.findIndex(
-        (square) => square.isSelected === true
-      )
-      if (fromSqIndex !== -1) thePiece = updatedSquares[fromSqIndex].piece
+      if (state.check.checkMate) return { ...state }
 
-      if (thePiece !== null) updatedSquares[fromSqIndex].piece = null
+      const clonedSquares = structuredClone(state.squares)
 
-      const movingSqIndex = updatedSquares.findIndex(
-        (square) => square.id === squareId
-      )
+      // get the from index
+      const fromSqIndex = clonedSquares.findIndex((sq) => sq.isSelected)
 
-      let capturedPiece: Piece | null = null
-      // I suppose movingSqIndex is not -1
-      if (updatedSquares[movingSqIndex].piece) {
-        capturedPiece = updatedSquares[movingSqIndex].piece
-        updatedSquares[movingSqIndex].piece = thePiece
-      } else {
-        updatedSquares[movingSqIndex].piece = thePiece
+      // get the to index
+      const toSqIndex = clonedSquares.findIndex((sq) => sq.id === squareId)
+
+      const result = pieceMover(clonedSquares, fromSqIndex, toSqIndex)
+
+      if (result!.isPlayerCheckThreat && !result!.updatedSqs) {
+        return {
+          check: {
+            ...state.check,
+            isPlayerCheckThreat: true,
+          },
+        }
       }
-
-      const deselectedAllSquares = deselectAllSquares(updatedSquares)
 
       let changedPlayer = state.toMovePlayer
       if (state.toMovePlayer === "white") {
@@ -71,12 +77,19 @@ export const usePlayGroundStore = create<PlayGroundStore>((set) => ({
       }
 
       return {
-        squares: deselectedAllSquares,
+        squares: result!.updatedSqs ? [...result!.updatedSqs] : state.squares,
         totalMoves: state.totalMoves + 1,
         toMovePlayer: changedPlayer,
-        capturedPieces: capturedPiece
-          ? [...state.capturedPieces, capturedPiece]
+        capturedPieces: result!.capturedPiece
+          ? [...state.capturedPieces, result!.capturedPiece]
           : state.capturedPieces,
+        check: {
+          checkedPlayer: result!.oppChecked!.opp_king_check
+            ? changedPlayer
+            : null,
+          isPlayerCheckThreat: false,
+          checkMate: result!.oppChecked!.check_mate,
+        },
       }
     }),
 }))

@@ -1,2 +1,28 @@
 [-] incrementMoves doesn't seem to be needed.
 [-] PlayGroundStore - I supposed movingSqIndex will not be -1
+
+1. when player checks the opponent king then these happen:
+  i. if the check is recoverable, then it's not checkmate but a check
+  ii. if the check is not recoverable, then it's a checkmate and a check
+2. if the player doesn't check the opponent, then it's neither a checkmate nor a check
+
+---------------
+1. get the opponent king's index ✅
+2. get the squares which has player's pieces that check the opponent king. ✅
+3. if there's no squares found with player's pieces that checks the opponent, then it fulfills the 2nd goal. ✅
+4. if there are player's pieces squares that check the opponent, the following things to do:
+  i. get all the toMoves of players which are checking the opponent. ✅
+  ii. check if opponent king has toMoves which are not included in toMoves of player's checking pieces. ✅
+  iii. if opponent king has toMoves which are not included in player's checking pieces' toMoves, it's a check but not checkmate - fulfills the 1(iii). ✅
+  iv. take a variable to keep the commonMoves which is going to be useful in the next steps ✅
+  v. get squares with opponent pieces which can make possible recovery happen. ✅
+    a. run a filter method on squares and get all the  common toMoves between each opponent piece and toMoves of player's checking pieces except king's index. ✅
+    b. get the common moves in commonMoves array taken before. ✅
+  iv. if possible recovery pieces don't exist, check and checkmate. ✅
+  v. if possible recovery pieces exist, run a for loop on possible recovery pieces' squares. ✅
+    a. before the loop, take a checkMateRecovery variabele of boolean value. ✅
+    b. filter commonMoves and get the moves which are included in each possible recovery piece's toMoves. ✅
+    c. clone squares as tempSquares ✅
+    d. check each move of movingMoves and run some method for movingMoves. See if any move recovers the check ✅
+      d.1. get from index - where the recovery piece is in. ✅
+      d.2. put the piece in moving index square and make from index square piece null. ✅
